@@ -1,0 +1,2 @@
+
+require "webhook-publisher/core"
