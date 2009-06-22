@@ -106,24 +106,22 @@ class AclTest < Test::Unit::TestCase
   end
 
   #
-  # RecordBaseクラス インスタンスメソッド
+  # RecordBaseクラス
   #
 
-  def test_to_ipaddr
-    record = @klass::RecordBase.new("0.0.0.0/0")
-
+  def test_record_base_initialize
     assert_equal(
       IPAddr.new("127.0.0.0/8"),
-      record.to_ipaddr(IPAddr.new("127.0.0.0/8")))
+      @klass::RecordBase.new(IPAddr.new("127.0.0.0/8")).ipaddr)
     assert_equal(
       IPAddr.new("127.0.0.0/8"),
-      record.to_ipaddr("127.0.0.0/8"))
+      @klass::RecordBase.new("127.0.0.0/8").ipaddr)
     assert_equal(
       IPAddr.new("0.0.0.0/0"),
-      record.to_ipaddr(:all))
+      @klass::RecordBase.new(:all).ipaddr)
 
     assert_raise(ArgumentError) {
-      record.to_ipaddr(:invalid)
+      @klass::RecordBase.new(:invalid)
     }
   end
 end

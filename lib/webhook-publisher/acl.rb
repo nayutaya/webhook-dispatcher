@@ -50,20 +50,19 @@ class WebHookPublisher::Acl
 
   class RecordBase
     def initialize(ipaddr)
-      @ipaddr = to_ipaddr(ipaddr)
+      @ipaddr =
+        case ipaddr
+        when :all   then IPAddr.new("0.0.0.0/0")
+        when String then IPAddr.new(ipaddr)
+        when IPAddr then ipaddr
+        else raise(ArgumentError, "invalid IP address")
+        end
     end
+
+    attr_reader :ipaddr
 
     def include?(ipaddr)
       return @ipaddr.include?(ipaddr)
-    end
-
-    def to_ipaddr(ipaddr)
-      case ipaddr
-      when :all   then IPAddr.new("0.0.0.0/0")
-      when String then IPAddr.new(ipaddr)
-      when IPAddr then ipaddr
-      else raise(ArgumentError, "invalid IP address")
-      end
     end
   end
 
