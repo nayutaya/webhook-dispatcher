@@ -36,4 +36,8 @@ class WebHookPublisher::Acl
 
     return result
   end
+
+  def deny?(ipaddr)
+    return !self.allow?(ipaddr)
+  end
 end
