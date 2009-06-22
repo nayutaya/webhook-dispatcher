@@ -29,6 +29,23 @@ class WebHookPublisher::Acl
     return self
   end
 
+  def with(&block)
+    raise(ArgumentError) unless block_given?
+
+    obj = Object.new
+
+    this = self
+    (class << obj; self; end).class_eval {
+      define_method(:allow) { |ipaddr| this.add_allow(ipaddr) }
+      define_method(:deny)  { |ipaddr| this.add_deny(ipaddr) }
+      private :allow, :deny
+    }
+
+    obj.instance_eval(&block)
+
+    return self
+  end
+
   def allow?(ipaddr)
     result = true
 

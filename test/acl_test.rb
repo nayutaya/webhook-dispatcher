@@ -54,16 +54,41 @@ class AclTest < Test::Unit::TestCase
     assert_equal(2, @acl.size)
   end
 
+  def test_with__none
+    @acl.with { }
+    assert_equal(0, @acl.size)
+  end
+
+  def test_with__allow
+    @acl.with { allow :all }
+    assert_equal(1, @acl.size)
+  end
+
+  def test_with__deny
+    @acl.with { deny :all }
+    assert_equal(1, @acl.size)
+  end
+
+  def test_with__without_block
+    assert_raise(ArgumentError) {
+      @acl.with
+    }
+  end
+
   def test_allow?
     assert_equal(true, @acl.allow?("127.0.0.1"))
     @acl.add_deny("127.0.0.0/8")
     assert_equal(false, @acl.allow?("127.0.0.1"))
+    @acl.add_allow("127.0.0.0/8")
+    assert_equal(true, @acl.allow?("127.0.0.1"))
   end
 
   def test_deny?
     assert_equal(false, @acl.deny?("127.0.0.1"))
     @acl.add_deny("127.0.0.0/8")
     assert_equal(true, @acl.deny?("127.0.0.1"))
+    @acl.add_allow("127.0.0.0/8")
+    assert_equal(false, @acl.deny?("127.0.0.1"))
   end
 
   def test_complex1
