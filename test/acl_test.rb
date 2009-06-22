@@ -92,8 +92,10 @@ class AclTest < Test::Unit::TestCase
   end
 
   def test_complex1
-    @acl.add_deny("0.0.0.0/0")
-    @acl.add_allow("127.0.0.0/8")
+    @acl.with {
+      deny :all
+      allow "127.0.0.0/8"
+    }
 
     assert_equal(false, @acl.allow?("126.255.255.255"))
     assert_equal(true,  @acl.allow?("127.0.0.0"))
@@ -102,10 +104,12 @@ class AclTest < Test::Unit::TestCase
   end
 
   def test_complex2
-    @acl.add_deny("0.0.0.0/0")
-    @acl.add_allow("192.168.1.0/24")
-    @acl.add_allow("192.168.3.0/24")
-    @acl.add_deny("192.168.1.127")
+    @acl.with {
+      deny :all
+      allow "192.168.1.0/24"
+      allow "192.168.3.0/24"
+      deny "192.168.1.127"
+    }
 
     assert_equal(false, @acl.allow?("192.168.0.0"))
     assert_equal(true,  @acl.allow?("192.168.1.0"))
