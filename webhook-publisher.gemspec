@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.date    = "2009-06-23"
 
   s.authors = ["Yuya Kato"]
-  s.email   = %q{yuyakato@gmail.com}
+  s.email   = "yuyakato@gmail.com"
 
   s.summary     = "webhook-publisher"
   s.description = "webhook-publisher"
@@ -36,13 +36,13 @@ Gem::Specification.new do |s|
     "webhook-publisher.gemspec",
     "webhook-publisher.gemspec.erb",
   ]
-  s.extra_rdoc_files = [
-    "README.ja",
-  ]
   s.test_files = [
     "test/acl_test.rb",
     "test/request_base.rb",
     "test/response_test.rb",
     "test/test_helper.rb",
+  ]
+  s.extra_rdoc_files = [
+    "README.ja",
   ]
 end
