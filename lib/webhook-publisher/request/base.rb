@@ -1,7 +1,9 @@
 
 require "uri"
 
-class WebHookPublisher::Request
+class WebHookPublisher
+  module Request
+  end
 end
 
 class WebHookPublisher::Request::Base
