@@ -18,21 +18,6 @@ class AclTest < Test::Unit::TestCase
   # クラスメソッド
   #
 
-  def test_self_to_ipaddr
-    assert_equal(
-      IPAddr.new("127.0.0.0/8"),
-      @klass.to_ipaddr(IPAddr.new("127.0.0.0/8")))
-    assert_equal(
-      IPAddr.new("127.0.0.0/8"),
-      @klass.to_ipaddr("127.0.0.0/8"))
-    assert_equal(
-      IPAddr.new("0.0.0.0/0"),
-      @klass.to_ipaddr(:all))
-
-    assert_raise(ArgumentError) {
-      @klass.to_ipaddr(:invalid)
-    }
-  end
 
   #
   # インスタンスメソッド
@@ -118,5 +103,27 @@ class AclTest < Test::Unit::TestCase
     assert_equal(false, @acl.allow?("192.168.2.0"))
     assert_equal(true,  @acl.allow?("192.168.3.0"))
     assert_equal(true,  @acl.allow?("192.168.3.255"))
+  end
+
+  #
+  # RecordBaseクラス インスタンスメソッド
+  #
+
+  def test_to_ipaddr
+    record = @klass::RecordBase.new("0.0.0.0/0")
+
+    assert_equal(
+      IPAddr.new("127.0.0.0/8"),
+      record.to_ipaddr(IPAddr.new("127.0.0.0/8")))
+    assert_equal(
+      IPAddr.new("127.0.0.0/8"),
+      record.to_ipaddr("127.0.0.0/8"))
+    assert_equal(
+      IPAddr.new("0.0.0.0/0"),
+      record.to_ipaddr(:all))
+
+    assert_raise(ArgumentError) {
+      record.to_ipaddr(:invalid)
+    }
   end
 end
