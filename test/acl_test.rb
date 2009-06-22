@@ -18,6 +18,24 @@ class AclTest < Test::Unit::TestCase
   # クラスメソッド
   #
 
+  def test_self_with__none
+    acl = @klass.with { }
+    assert_equal(0, acl.size)
+  end
+
+  def test_self_with__allow_and_deny
+    acl = @klass.with {
+      allow :all
+      deny :all
+    }
+    assert_equal(2, acl.size)
+  end
+
+  def test_self_with__without_block
+    assert_raise(ArgumentError) {
+      @klass.with
+    }
+  end
 
   #
   # インスタンスメソッド

@@ -6,6 +6,10 @@ class WebHookPublisher::Acl
     @records = []
   end
 
+  def self.with(&block)
+    return self.new.with(&block)
+  end
+
   def size
     return @records.size
   end
