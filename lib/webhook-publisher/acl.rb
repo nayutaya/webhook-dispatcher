@@ -3,20 +3,20 @@ require "ipaddr"
 
 class WebHookPublisher::Acl
   def initialize
-    @list = []
+    @records = []
   end
 
   def size
-    return @list.size
+    return @records.size
   end
 
   def add_allow(ipaddr)
-    @list << AllowRecord.new(ipaddr)
+    @records << AllowRecord.new(ipaddr)
     return self
   end
 
   def add_deny(ipaddr)
-    @list << DenyRecord.new(ipaddr)
+    @records << DenyRecord.new(ipaddr)
     return self
   end
 
@@ -38,7 +38,7 @@ class WebHookPublisher::Acl
   end
 
   def allow?(ipaddr)
-    return @list.inject(true) { |result, record|
+    return @records.inject(true) { |result, record|
       result = record.value if record.include?(ipaddr)
       result
     }
