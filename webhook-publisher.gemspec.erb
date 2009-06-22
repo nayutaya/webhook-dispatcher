@@ -5,8 +5,8 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = Gem::Requirement.new(">= 1.8.6")
 
   s.name    = "webhook-publisher"
-  s.version = "0.0.0"
-  s.date    = "2009-06-23"
+  s.version = <%= version.dump %>
+  s.date    = <%= date.dump %>
 
   s.authors = ["Yuya Kato"]
   s.email   = %q{yuyakato@gmail.com}
@@ -20,29 +20,16 @@ Gem::Specification.new do |s|
   s.require_paths     = ["lib"]
 
   s.files = [
-    "example.rb",
-    "lib/webhook-publisher/acl.rb",
-    "lib/webhook-publisher/core.rb",
-    "lib/webhook-publisher/request/base.rb",
-    "lib/webhook-publisher/response.rb",
-    "lib/webhook-publisher/version.rb",
-    "lib/webhook-publisher.rb",
-    "Rakefile",
-    "README.ja",
-    "test/acl_test.rb",
-    "test/request_base.rb",
-    "test/response_test.rb",
-    "test/test_helper.rb",
-    "webhook-publisher.gemspec",
-    "webhook-publisher.gemspec.erb",
+<%- files.each { |path| -%>
+    <%= path.dump %>,
+<%- } -%>
   ]
   s.extra_rdoc_files = [
     "README.ja",
   ]
   s.test_files = [
-    "test/acl_test.rb",
-    "test/request_base.rb",
-    "test/response_test.rb",
-    "test/test_helper.rb",
+<%- test_files.each { |path| -%>
+    <%= path.dump %>,
+<%- } -%>
   ]
 end
