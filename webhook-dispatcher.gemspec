@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = Gem::Requirement.new(">= 1.8.6")
 
   s.name    = "webhook-dispatcher"
-  s.version = "0.0.0"
+  s.version = "0.0.1"
   s.date    = "2009-06-23"
 
   s.authors = ["Yuya Kato"]
