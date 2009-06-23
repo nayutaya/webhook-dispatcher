@@ -1,5 +1,5 @@
 
-class WebHookPublisher::Response
+class WebHookDispatcher::Response
   def initialize(options = {})
     options = options.dup
     @success   = (options.delete(:success) == true)

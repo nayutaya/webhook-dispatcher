@@ -1,10 +1,10 @@
 
 require File.dirname(__FILE__) + "/test_helper"
-require "webhook-publisher/request/get"
+require "webhook-dispatcher/request/get"
 
 class RequestGetTest < Test::Unit::TestCase
   def setup
-    @klass = WebHookPublisher::Request::Get
+    @klass = WebHookDispatcher::Request::Get
   end
 
   def test_initialize

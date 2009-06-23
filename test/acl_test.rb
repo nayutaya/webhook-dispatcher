@@ -1,11 +1,11 @@
 
 require File.dirname(__FILE__) + "/test_helper"
-require "webhook-publisher/core"
-require "webhook-publisher/acl"
+require "webhook-dispatcher/core"
+require "webhook-dispatcher/acl"
 
 class AclTest < Test::Unit::TestCase
   def setup
-    @klass = WebHookPublisher::Acl
+    @klass = WebHookDispatcher::Acl
     @acl   = @klass.new
   end
 

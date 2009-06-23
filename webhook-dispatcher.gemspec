@@ -4,16 +4,16 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0")
   s.required_ruby_version     = Gem::Requirement.new(">= 1.8.6")
 
-  s.name    = "webhook-publisher"
+  s.name    = "webhook-dispatcher"
   s.version = "0.0.0"
   s.date    = "2009-06-23"
 
   s.authors = ["Yuya Kato"]
   s.email   = "yuyakato@gmail.com"
 
-  s.summary     = "webhook-publisher"
-  s.description = "webhook-publisher"
-  s.homepage    = "http://github.com/nayutaya/webhook-publisher/"
+  s.summary     = "webhook-dispatcher"
+  s.description = "webhook-dispatcher"
+  s.homepage    = "http://github.com/nayutaya/webhook-dispatcher/"
 
   s.rubyforge_project = nil
   s.has_rdoc          = false
@@ -21,24 +21,27 @@ Gem::Specification.new do |s|
 
   s.files = [
     "example.rb",
-    "lib/webhook-publisher/acl.rb",
-    "lib/webhook-publisher/core.rb",
-    "lib/webhook-publisher/request/base.rb",
-    "lib/webhook-publisher/response.rb",
-    "lib/webhook-publisher/version.rb",
-    "lib/webhook-publisher.rb",
+    "lib/webhook-dispatcher/acl.rb",
+    "lib/webhook-dispatcher/core.rb",
+    "lib/webhook-dispatcher/request/base.rb",
+    "lib/webhook-dispatcher/request/get.rb",
+    "lib/webhook-dispatcher/response.rb",
+    "lib/webhook-dispatcher/version.rb",
+    "lib/webhook-dispatcher.rb",
     "Rakefile",
     "README.ja",
     "test/acl_test.rb",
-    "test/request_base.rb",
+    "test/request_base_test.rb",
+    "test/request_get_test.rb",
     "test/response_test.rb",
     "test/test_helper.rb",
-    "webhook-publisher.gemspec",
-    "webhook-publisher.gemspec.erb",
+    "webhook-dispatcher.gemspec",
+    "webhook-dispatcher.gemspec.erb",
   ]
   s.test_files = [
     "test/acl_test.rb",
-    "test/request_base.rb",
+    "test/request_base_test.rb",
+    "test/request_get_test.rb",
     "test/response_test.rb",
     "test/test_helper.rb",
   ]

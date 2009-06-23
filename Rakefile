@@ -11,18 +11,18 @@ end
 
 task :gemspec do
   require "erb"
-  require "lib/webhook-publisher/version"
+  require "lib/webhook-dispatcher/version"
 
-  src = File.open("webhook-publisher.gemspec.erb", "rb") { |file| file.read }
+  src = File.open("webhook-dispatcher.gemspec.erb", "rb") { |file| file.read }
   erb = ERB.new(src, nil, "-")
 
-  version = WebHookPublisher::VERSION
+  version = WebHookDispatcher::VERSION
   date    = Time.now.strftime("%Y-%m-%d")
 
   files      = Dir.glob("**/*").select { |s| File.file?(s) }
   test_files = Dir.glob("test/**").select { |s| File.file?(s) }
 
-  File.open("webhook-publisher.gemspec", "wb") { |file|
+  File.open("webhook-dispatcher.gemspec", "wb") { |file|
     file.write(erb.result(binding))
   }
 end

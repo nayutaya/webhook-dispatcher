@@ -1,12 +1,12 @@
 
 require "uri"
 
-class WebHookPublisher
+class WebHookDispatcher
   module Request
   end
 end
 
-class WebHookPublisher::Request::Base
+class WebHookDispatcher::Request::Base
   def initialize(uri)
     @uri = uri
   end

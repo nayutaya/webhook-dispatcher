@@ -1,11 +1,11 @@
 
 require File.dirname(__FILE__) + "/test_helper"
-require "webhook-publisher/core"
-require "webhook-publisher/response"
+require "webhook-dispatcher/core"
+require "webhook-dispatcher/response"
 
 class ResponseTest < Test::Unit::TestCase
   def setup
-    @klass = WebHookPublisher::Response
+    @klass = WebHookDispatcher::Response
   end
 
   def test_initialize

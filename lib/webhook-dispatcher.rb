@@ -1,2 +1,2 @@
 
-require "webhook-publisher/core"
+require "webhook-dispatcher/core"

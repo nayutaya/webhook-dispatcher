@@ -1,3 +1,3 @@
 
-class WebHookPublisher
+class WebHookDispatcher
 end

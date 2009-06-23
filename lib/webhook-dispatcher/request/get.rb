@@ -1,7 +1,7 @@
 
-require "webhook-publisher/request/base"
+require "webhook-dispatcher/request/base"
 
-class WebHookPublisher::Request::Get < WebHookPublisher::Request::Base
+class WebHookDispatcher::Request::Get < WebHookDispatcher::Request::Base
   def initialize(uri)
     super(uri)
   end

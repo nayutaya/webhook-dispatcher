@@ -1,7 +1,7 @@
 
 require "ipaddr"
 
-class WebHookPublisher::Acl
+class WebHookDispatcher::Acl
   def initialize
     @records = []
   end
