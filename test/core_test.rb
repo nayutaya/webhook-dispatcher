@@ -55,6 +55,12 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(@klass::Acl.deny_all, wh.acl)
   end
 
+  def test_initialize__invalid_parameter
+    assert_raise(ArgumentError) {
+      @klass.new(:invalid => true)
+    }
+  end
+
   #
   # クラスメソッド
   #
