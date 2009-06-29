@@ -11,6 +11,14 @@ class WebHookDispatcher::Acl
     return self.new.with(&block)
   end
 
+  def self.allow_all
+    return self.with { allow :all }
+  end
+
+  def self.deny_all
+    return self.with { deny :all }
+  end
+
   def ==(other)
     return false unless other.instance_of?(self.class)
     return (@records == other.instance_eval { @records })

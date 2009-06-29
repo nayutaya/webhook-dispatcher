@@ -37,6 +37,18 @@ class AclTest < Test::Unit::TestCase
     }
   end
 
+  def test_self_allow_all
+    assert_equal(
+      @klass.with { allow :all },
+      @klass.allow_all)
+  end
+
+  def test_self_deny_all
+    assert_equal(
+      @klass.with { deny :all },
+      @klass.deny_all)
+  end
+
   #
   # インスタンスメソッド
   #
