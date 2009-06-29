@@ -29,6 +29,20 @@ class CoreTest < Test::Unit::TestCase
     @klass.user_agent = "ie"
   end
 
+  def test_self_default_open_timeout
+    assert_equal(10, @klass.default_open_timeout)
+  end
+
+  def test_self_default_read_timeout
+    assert_equal(10, @klass.default_read_timeout)
+  end
+
+  def test_self_default_user_agent
+    assert_equal(
+      "webhook-dispatcher #{@klass::VERSION}",
+      @klass.default_user_agent)
+  end
+
   #
   # インスタンスメソッド
   #

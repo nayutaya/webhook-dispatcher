@@ -6,9 +6,6 @@ WebHookPublisher.acl_with {
 }
 
 wp = WebHookPublisher.new
-wp.open_timeout = 5 # sec
-wp.read_timeout = 5 # sec
-wp.user_agent = "hoge"
 wp.acl = WebHookPublisher::Acl.with {
   #..
 }
