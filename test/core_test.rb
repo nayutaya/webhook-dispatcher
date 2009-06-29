@@ -9,6 +9,21 @@ class CoreTest < Test::Unit::TestCase
   end
 
   #
+  # 初期化
+  #
+
+  def test_initialize__global_default
+    @klass.open_timeout = nil
+    @klass.read_timeout = nil
+    @klass.user_agent   = nil
+
+    wh = @klass.new
+    assert_equal(@klass.default_open_timeout, wh.open_timeout)
+    assert_equal(@klass.default_read_timeout, wh.read_timeout)
+    assert_equal(@klass.default_user_agent,   wh.user_agent)
+  end
+
+  #
   # クラスメソッド
   #
 
