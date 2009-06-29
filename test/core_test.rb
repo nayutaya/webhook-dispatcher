@@ -67,6 +67,12 @@ class CoreTest < Test::Unit::TestCase
     assert_equal("ie", @klass.user_agent)
   end
 
+  def test_self_acl
+    acl = @klass::Acl.new
+    @klass.acl = acl
+    assert_equal(acl, @klass.acl)
+  end
+
   def test_self_default_open_timeout
     assert_equal(10, @klass.default_open_timeout)
   end
@@ -79,6 +85,12 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(
       "webhook-dispatcher #{@klass::VERSION}",
       @klass.default_user_agent)
+  end
+
+  def test_self_default_acl
+    acl = @klass.default_acl
+    assert_kind_of(@klass::Acl, acl)
+    assert_equal(0, acl.size)
   end
 
   #
@@ -98,5 +110,11 @@ class CoreTest < Test::Unit::TestCase
   def test_user_agent
     @dispatcher.user_agent = "firefox"
     assert_equal("firefox", @dispatcher.user_agent)
+  end
+
+  def test_acl
+    acl = @klass::Acl.new
+    @dispatcher.acl = acl
+    assert_equal(acl, @dispatcher.acl)
   end
 end

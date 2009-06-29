@@ -1,5 +1,6 @@
 
 require "webhook-dispatcher/version"
+require "webhook-dispatcher/acl"
 
 class WebHookDispatcher
   def initialize(options = {})
@@ -13,11 +14,13 @@ class WebHookDispatcher
     @open_timeout = nil
     @read_timeout = nil
     @user_agent   = nil
-    attr_accessor :open_timeout, :read_timeout, :user_agent
+    @acl          = nil
+    attr_accessor :open_timeout, :read_timeout, :user_agent, :acl
     define_method(:default_open_timeout) { 10 }
     define_method(:default_read_timeout) { 10 }
     define_method(:default_user_agent)   { "webhook-dispatcher #{self::VERSION}" }
+    define_method(:default_acl)          { Acl.new }
   end
 
-  attr_accessor :open_timeout, :read_timeout, :user_agent
+  attr_accessor :open_timeout, :read_timeout, :user_agent, :acl
 end
