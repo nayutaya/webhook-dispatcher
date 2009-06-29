@@ -21,7 +21,15 @@ class WebHookDispatcher
     define_method(:default_read_timeout) { 10 }
     define_method(:default_user_agent)   { "webhook-dispatcher #{self::VERSION}" }
     define_method(:default_acl)          { Acl.new }
+
+    def acl_with(&block)
+      self.acl = Acl.with(&block)
+    end
   end
 
   attr_accessor :open_timeout, :read_timeout, :user_agent, :acl
+
+  def acl_with(&block)
+    self.acl = Acl.with(&block)
+  end
 end

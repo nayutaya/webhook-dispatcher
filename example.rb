@@ -1,15 +1,6 @@
 
 # このスクリプトはイメージであり、動作しません
 
-WebHookPublisher.acl = x
-WebHookPublisher.acl_with {
-}
-
-wp = WebHookPublisher.new
-wp.acl = WebHookPublisher::Acl.with {
-  #..
-}
-
 request_obj = WebHookPublisher::Request.new(:get, URI.new(..))
 request_obj.http_method = :get
 request_obj.uri = uri

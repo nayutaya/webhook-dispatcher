@@ -97,6 +97,13 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(@klass::Acl.new, @klass.default_acl)
   end
 
+  def test_self_acl_with
+    @klass.acl_with {
+      allow :all
+    }
+    assert_equal(@klass::Acl.allow_all, @klass.acl)
+  end
+
   #
   # インスタンスメソッド
   #
@@ -119,5 +126,12 @@ class CoreTest < Test::Unit::TestCase
   def test_acl
     @dispatcher.acl = @klass::Acl.new
     assert_equal(@klass::Acl.new, @dispatcher.acl)
+  end
+
+  def test_acl_with
+    @dispatcher.acl_with {
+      allow :all
+    }
+    assert_equal(@klass::Acl.allow_all, @dispatcher.acl)
   end
 end
