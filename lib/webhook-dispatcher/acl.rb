@@ -11,6 +11,11 @@ class WebHookDispatcher::Acl
     return self.new.with(&block)
   end
 
+  def ==(other)
+    return false unless other.instance_of?(self.class)
+    return (@records == other.instance_eval { @records })
+  end
+
   def size
     return @records.size
   end
@@ -65,6 +70,11 @@ class WebHookDispatcher::Acl
     end
 
     attr_reader :ipaddr
+
+    def ==(other)
+      return false unless other.instance_of?(self.class)
+      return (self.ipaddr == other.ipaddr)
+    end
 
     def include?(ipaddr)
       return @ipaddr.include?(ipaddr)

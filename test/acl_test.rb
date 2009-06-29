@@ -41,6 +41,29 @@ class AclTest < Test::Unit::TestCase
   # インスタンスメソッド
   #
 
+  def test_equal__empty
+    a, b = @klass.new, @klass.new
+    assert_equal(true, (a == b))
+  end
+
+  def test_equal__same_size_but_not_equal
+    a, b = @klass.new, @klass.new
+    a.add_allow("127.0.0.0/8")
+    b.add_deny("127.0.0.0/8")
+    assert_equal(false, (a == b))
+  end
+
+  def test_equal__same
+    a, b = @klass.new, @klass.new
+    a.add_allow("127.0.0.0/8")
+    b.add_allow("127.0.0.0/8")
+    assert_equal(true, (a == b))
+  end
+
+  def test_equal__other_class
+    assert_equal(false, (@klass.new == nil))
+  end
+
   def test_add_allow
     assert_equal(0, @acl.size)
     @acl.add_allow("0.0.0.0/0")
@@ -141,5 +164,11 @@ class AclTest < Test::Unit::TestCase
     assert_raise(ArgumentError) {
       @klass::RecordBase.new(:invalid)
     }
+  end
+
+  def test_record_base_equal
+    assert_equal(true,  (@klass::RecordBase.new(:all) == @klass::RecordBase.new(:all)))
+    assert_equal(false, (@klass::RecordBase.new(:all) == @klass::RecordBase.new("127.0.0.0/8")))
+    assert_equal(false, (@klass::RecordBase.new(:all) == nil))
   end
 end
