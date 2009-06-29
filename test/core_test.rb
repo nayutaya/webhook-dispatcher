@@ -29,30 +29,30 @@ class CoreTest < Test::Unit::TestCase
     @klass.open_timeout = 1
     @klass.read_timeout = 2
     @klass.user_agent   = "3"
-    @klass.acl          = @klass::Acl.with { allow :all }
+    @klass.acl          = @klass::Acl.allow_all
 
     wh = @klass.new
     assert_equal(1,   wh.open_timeout)
     assert_equal(2,   wh.read_timeout)
     assert_equal("3", wh.user_agent)
-    assert_equal(@klass::Acl.with { allow :all }, wh.acl)
+    assert_equal(@klass::Acl.allow_all, wh.acl)
   end
 
   def test_initialize__parameter
     @klass.open_timeout = 1
     @klass.read_timeout = 2
     @klass.user_agent   = "3"
-    @klass.acl          = @klass::Acl.with { allow :all }
+    @klass.acl          = @klass::Acl.allow_all
 
     wh = @klass.new(
       :open_timeout => 4,
       :read_timeout => 5,
       :user_agent   => "6",
-      :acl          => @klass::Acl.with { deny :all })
+      :acl          => @klass::Acl.deny_all)
     assert_equal(4,   wh.open_timeout)
     assert_equal(5,   wh.read_timeout)
     assert_equal("6", wh.user_agent)
-    assert_equal(@klass::Acl.with { deny :all }, wh.acl)
+    assert_equal(@klass::Acl.deny_all, wh.acl)
   end
 
   #
