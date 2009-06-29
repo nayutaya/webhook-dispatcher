@@ -1,5 +1,5 @@
 
-require File.dirname(__FILE__) + "/test_helper"
+require File.dirname(__FILE__) + "/../test_helper"
 require "webhook-dispatcher/request/base"
 
 class RequestBaseTest < Test::Unit::TestCase
