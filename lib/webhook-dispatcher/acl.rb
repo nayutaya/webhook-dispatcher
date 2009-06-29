@@ -1,6 +1,7 @@
 
 require "ipaddr"
 
+# TODO: ポート番号によるアクセス制御
 class WebHookDispatcher::Acl
   def initialize
     @records = []
