@@ -7,6 +7,10 @@ class RequestGetTest < Test::Unit::TestCase
     @klass = WebHookDispatcher::Request::Get
   end
 
+  #
+  # 初期化
+  #
+
   def test_initialize
     req = @klass.new(URI.parse("http://example.jp"))
     assert_equal(URI.parse("http://example.jp"), req.uri)
