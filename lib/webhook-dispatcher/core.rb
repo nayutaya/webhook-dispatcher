@@ -6,10 +6,11 @@ class WebHookDispatcher
   @read_timeout = nil
   @user_agent   = nil
 
-  def initialize
-    @open_timeout = self.class.default_open_timeout
-    @read_timeout = self.class.default_read_timeout
-    @user_agent   = self.class.default_user_agent
+  def initialize(options = {})
+    options = options.dup
+    @open_timeout = options.delete(:open_timeout) || self.class.open_timeout || self.class.default_open_timeout
+    @read_timeout = options.delete(:read_timeout) || self.class.read_timeout || self.class.default_read_timeout
+    @user_agent   = options.delete(:user_agent)   || self.class.user_agent   || self.class.default_user_agent
   end
 
   class << self

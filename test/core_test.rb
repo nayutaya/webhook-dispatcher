@@ -23,25 +23,48 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(@klass.default_user_agent,   wh.user_agent)
   end
 
+  def test_initialize__class_default
+    @klass.open_timeout = 1
+    @klass.read_timeout = 2
+    @klass.user_agent   = "3"
+
+    wh = @klass.new
+    assert_equal(1,   wh.open_timeout)
+    assert_equal(2,   wh.read_timeout)
+    assert_equal("3", wh.user_agent)
+  end
+
+  def test_initialize__parameter
+    @klass.open_timeout = 1
+    @klass.read_timeout = 2
+    @klass.user_agent   = "3"
+
+    wh = @klass.new(
+      :open_timeout => 4,
+      :read_timeout => 5,
+      :user_agent   => "6")
+    assert_equal(4,   wh.open_timeout)
+    assert_equal(5,   wh.read_timeout)
+    assert_equal("6", wh.user_agent)
+  end
+
   #
   # クラスメソッド
   #
 
   def test_self_open_timeout
-    assert_equal(nil, @klass.open_timeout)
     @klass.open_timeout = 5
     assert_equal(5, @klass.open_timeout)
   end
 
   def test_self_read_timeout
-    assert_equal(nil, @klass.read_timeout)
     @klass.read_timeout = 5
     assert_equal(5, @klass.read_timeout)
   end
 
   def test_self_user_agent
-    assert_equal(nil, @klass.user_agent)
     @klass.user_agent = "ie"
+    assert_equal("ie", @klass.user_agent)
   end
 
   def test_self_default_open_timeout
