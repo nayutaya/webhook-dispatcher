@@ -1,9 +1,6 @@
 
 # このスクリプトはイメージであり、動作しません
 
-WebHookPublisher.open_timeout = 5 # sec
-WebHookPublisher.read_timeout = 5 # sec
-WebHookPublisher.user_agent = "hoge"
 WebHookPublisher.acl = x
 WebHookPublisher.acl_with {
 }
