@@ -45,7 +45,5 @@ Gem::Specification.new do |s|
     "test/response_test.rb",
     "test/test_helper.rb",
   ]
-  s.extra_rdoc_files = [
-    "README.ja",
-  ]
+  s.extra_rdoc_files = []
 end
