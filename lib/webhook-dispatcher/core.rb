@@ -1,4 +1,5 @@
 
+require "net/http"
 require "webhook-dispatcher/version"
 require "webhook-dispatcher/acl"
 

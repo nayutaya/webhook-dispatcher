@@ -5,6 +5,9 @@ require "webhook-dispatcher/request/base"
 class RequestBaseTest < Test::Unit::TestCase
   def setup
     @klass = WebHookDispatcher::Request::Base
+
+    @example_jp  = URI.parse("http://example.jp")
+    @example_com = URI.parse("http://example.com")
   end
 
   #
@@ -12,8 +15,8 @@ class RequestBaseTest < Test::Unit::TestCase
   #
 
   def test_initialize
-    req = @klass.new(URI.parse("http://example.jp"))
-    assert_equal(URI.parse("http://example.jp"), req.instance_eval { @uri })
+    req = @klass.new(@example_jp)
+    assert_equal(@example_jp, req.instance_eval { @uri })
   end
 
   #
@@ -21,9 +24,15 @@ class RequestBaseTest < Test::Unit::TestCase
   #
 
   def test_uri
-    req = @klass.new(URI.parse("http://example.com"))
-    assert_equal(URI.parse("http://example.com"), req.uri)
-    req.uri = URI.parse("http://example.org")
-    assert_equal(URI.parse("http://example.org"), req.uri)
+    req = @klass.new(@example_jp)
+    assert_equal(@example_jp, req.uri)
+    req.uri = @example_com
+    assert_equal(@example_com, req.uri)
+  end
+
+  def test_create_http_request
+    assert_raise(NotImplementedError) {
+      @klass.new(@example_jp).create_http_request
+    }
   end
 end

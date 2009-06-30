@@ -1,5 +1,6 @@
 
 require "uri"
+require "webhook-dispatcher/core"
 
 class WebHookDispatcher
   module Request
@@ -12,4 +13,8 @@ class WebHookDispatcher::Request::Base
   end
 
   attr_accessor :uri
+
+  def create_http_request
+    raise(NotImplementedError)
+  end
 end
