@@ -148,6 +148,53 @@ class CoreTest < Test::Unit::TestCase
     # TODO: 実装せよ
   end
 
+  def test_request__200_ok
+    musha = Kagemusha.new(Net::HTTP)
+    musha.def(:start) { Net::HTTPOK.new("1.1", "200", "OK") }
+
+    response =
+      musha.swap {
+        @dispatcher.request(@klass::Request::Get.new(@example_jp))
+      }
+    assert_equal(true,     response.success?)
+    assert_equal(:success, response.status)
+    assert_equal(200,      response.http_code)
+    assert_equal("200 OK", response.message)
+    assert_equal(nil,      response.exception)
+  end
+
+  def test_request__201_created
+    musha = Kagemusha.new(Net::HTTP)
+    musha.def(:start) { Net::HTTPCreated.new("1.1", "201", "Created") }
+
+    response =
+      musha.swap {
+        @dispatcher.request(@klass::Request::Get.new(@example_jp))
+      }
+    assert_equal(true,     response.success?)
+    assert_equal(:success, response.status)
+    assert_equal(201,      response.http_code)
+    assert_equal("201 Created", response.message)
+    assert_equal(nil,      response.exception)
+  end
+
+  def test_request__301_moved_permanently
+    musha = Kagemusha.new(Net::HTTP)
+    musha.def(:start) { Net::HTTPMovedPermanently.new("1.1", "301", "Moved Permanently") }
+
+    response =
+      musha.swap {
+        @dispatcher.request(@klass::Request::Get.new(@example_jp))
+      }
+    assert_equal(false,    response.success?)
+    assert_equal(:failure, response.status)
+    assert_equal(301,      response.http_code)
+    assert_equal(
+      "301 Moved Permanently",
+      response.message)
+    assert_equal(nil,      response.exception)
+  end
+
   def test_get
     request = nil
     musha = Kagemusha.new(@klass)
