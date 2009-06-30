@@ -10,6 +10,7 @@ class CoreTest < Test::Unit::TestCase
     @real_access = false
     @example_jp  = URI.parse("http://example.jp/")
     @get_request = @klass::Request::Get.new(@example_jp)
+    @http_musha  = Kagemusha.new(Net::HTTP)
   end
 
   #
@@ -146,10 +147,9 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__200_ok
-    musha = Kagemusha.new(Net::HTTP).
-      def(:start) { Net::HTTPOK.new("1.1", "200", "OK") }
+    @http_musha.def(:start) { Net::HTTPOK.new("1.1", "200", "OK") }
 
-    response = musha.swap { @dispatcher.request(@get_request) }
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
     assert_equal(true,     response.success?)
     assert_equal(:success, response.status)
     assert_equal(200,      response.http_code)
@@ -158,10 +158,9 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__201_created
-    musha = Kagemusha.new(Net::HTTP).
-      def(:start) { Net::HTTPCreated.new("1.1", "201", "Created") }
+    @http_musha.def(:start) { Net::HTTPCreated.new("1.1", "201", "Created") }
 
-    response = musha.swap { @dispatcher.request(@get_request) }
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
     assert_equal(true,     response.success?)
     assert_equal(:success, response.status)
     assert_equal(201,      response.http_code)
@@ -170,10 +169,9 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__301_moved_permanently
-    musha = Kagemusha.new(Net::HTTP).
-      def(:start) { Net::HTTPMovedPermanently.new("1.1", "301", "Moved Permanently") }
+    @http_musha.def(:start) { Net::HTTPMovedPermanently.new("1.1", "301", "Moved Permanently") }
 
-    response = musha.swap { @dispatcher.request(@get_request) }
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,    response.success?)
     assert_equal(:failure, response.status)
     assert_equal(301,      response.http_code)
@@ -186,10 +184,9 @@ class CoreTest < Test::Unit::TestCase
   # TODO: 許可されていないホストに対するHTTPリクエストのテスト
 
   def test_request__timeout
-    musha = Kagemusha.new(Net::HTTP).
-      def(:start) { raise(TimeoutError) }
+    @http_musha.def(:start) { raise(TimeoutError) }
 
-    response = musha.swap { @dispatcher.request(@get_request) }
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,    response.success?)
     assert_equal(:timeout, response.status)
     assert_equal(nil,      response.http_code)
@@ -198,10 +195,9 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__refused
-    musha = Kagemusha.new(Net::HTTP).
-      def(:start) { raise(Errno::ECONNREFUSED) }
+    @http_musha.def(:start) { raise(Errno::ECONNREFUSED) }
 
-    response = musha.swap { @dispatcher.request(@get_request) }
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,    response.success?)
     assert_equal(:refused, response.status)
     assert_equal(nil,      response.http_code)
@@ -210,10 +206,9 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__reset
-    musha = Kagemusha.new(Net::HTTP).
-      def(:start) { raise(Errno::ECONNRESET) }
+    @http_musha.def(:start) { raise(Errno::ECONNRESET) }
 
-    response = musha.swap { @dispatcher.request(@get_request) }
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,  response.success?)
     assert_equal(:reset, response.status)
     assert_equal(nil,    response.http_code)
@@ -222,10 +217,9 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__other_error
-    musha = Kagemusha.new(Net::HTTP).
-      def(:start) { raise(SocketError, "message.") }
+    @http_musha.def(:start) { raise(SocketError, "message.") }
 
-    response = musha.swap { @dispatcher.request(@get_request) }
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,  response.success?)
     assert_equal(:error, response.status)
     assert_equal(nil,    response.http_code)
