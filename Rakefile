@@ -19,8 +19,14 @@ task :gemspec do
   version = WebHookDispatcher::VERSION
   date    = Time.now.strftime("%Y-%m-%d")
 
-  files      = Dir.glob("**/*").select { |s| File.file?(s) }
-  test_files = Dir.glob("test/**").select { |s| File.file?(s) }
+  files = Dir.glob("**/*").
+    select { |path| File.file?(path) }.
+    reject { |path| /^nbproject\// =~ path }.
+    sort
+
+  test_files = Dir.glob("test/**.rb").
+    select { |path| File.file?(path) }.
+    sort
 
   File.open("webhook-dispatcher.gemspec", "wb") { |file|
     file.write(erb.result(binding))

@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.name    = "webhook-dispatcher"
   s.version = "0.0.1"
-  s.date    = "2009-06-23"
+  s.date    = "2009-06-30"
 
   s.authors = ["Yuya Kato"]
   s.email   = "yuyakato@gmail.com"
@@ -20,19 +20,20 @@ Gem::Specification.new do |s|
   s.require_paths     = ["lib"]
 
   s.files = [
+    "README.ja",
+    "Rakefile",
     "example.rb",
+    "lib/webhook-dispatcher.rb",
     "lib/webhook-dispatcher/acl.rb",
     "lib/webhook-dispatcher/core.rb",
     "lib/webhook-dispatcher/request/base.rb",
     "lib/webhook-dispatcher/request/get.rb",
     "lib/webhook-dispatcher/response.rb",
     "lib/webhook-dispatcher/version.rb",
-    "lib/webhook-dispatcher.rb",
-    "Rakefile",
-    "README.ja",
     "test/acl_test.rb",
-    "test/request_base_test.rb",
-    "test/request_get_test.rb",
+    "test/core_test.rb",
+    "test/request/base_test.rb",
+    "test/request/get_test.rb",
     "test/response_test.rb",
     "test/test_helper.rb",
     "webhook-dispatcher.gemspec",
@@ -40,8 +41,7 @@ Gem::Specification.new do |s|
   ]
   s.test_files = [
     "test/acl_test.rb",
-    "test/request_base_test.rb",
-    "test/request_get_test.rb",
+    "test/core_test.rb",
     "test/response_test.rb",
     "test/test_helper.rb",
   ]
