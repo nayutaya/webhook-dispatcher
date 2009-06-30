@@ -10,12 +10,10 @@ class ResponseTest < Test::Unit::TestCase
 
   def test_initialize
     res = @klass.new(
-      :success   => true,
       :status    => :success,
       :http_code => 200,
       :message   => "OK",
       :exception => RuntimeError.new)
-    assert_equal(true,     res.success)
     assert_equal(true,     res.success?)
     assert_equal(:success, res.status)
     assert_equal(200,      res.http_code)
@@ -25,7 +23,6 @@ class ResponseTest < Test::Unit::TestCase
 
   def test_initialize__default
     res = @klass.new
-    assert_equal(false,    res.success)
     assert_equal(false,    res.success?)
     assert_equal(:unknown, res.status)
     assert_equal(nil,      res.http_code)
