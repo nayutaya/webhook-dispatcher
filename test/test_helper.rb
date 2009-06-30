@@ -1,6 +1,11 @@
 
 require "test/unit"
 require "rubygems"
-require "redgreen"
+
+begin
+  require "redgreen"
+rescue LoadError
+  # nop
+end
 
 $:.unshift(File.dirname(__FILE__) + "/../lib")
