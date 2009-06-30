@@ -2,10 +2,10 @@
 require "webhook-dispatcher/request/base"
 
 class WebHookDispatcher::Request::Post < WebHookDispatcher::Request::Base
-  def initialize(uri, data)
+  def initialize(uri, body)
     super(uri)
-    @data = data
+    @body = body
   end
 
-  attr_accessor :data
+  attr_accessor :body
 end

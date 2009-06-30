@@ -20,10 +20,10 @@ class RequestPostTest < Test::Unit::TestCase
   # インスタンスメソッド
   #
 
-  def test_data
+  def test_body
     req = @klass.new(URI.parse("http://example.jp"), "a")
-    assert_equal("a", req.data)
-    req.data = "b"
-    assert_equal("b", req.data)
+    assert_equal("a", req.body)
+    req.body = "b"
+    assert_equal("b", req.body)
   end
 end
