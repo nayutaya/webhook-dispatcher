@@ -6,6 +6,9 @@ class CoreTest < Test::Unit::TestCase
   def setup
     @klass = WebHookDispatcher
     @dispatcher = @klass.new
+
+    @real_access = false
+    @example_jp = URI.parse("http://example.jp/")
   end
 
   #
@@ -146,42 +149,70 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_get
-    # TODO: 実装せよ
+    request = nil
+    musha = Kagemusha.new(@klass)
+    musha.def(:request) { |req| request = req; :ok }
+    musha.swap {
+      assert_equal(:ok, @dispatcher.get(@example_jp))
+    }
+    assert_kind_of(@klass::Request::Get, request)
+    assert_equal(@example_jp, request.uri)
   end
 
   def test_get__request_to_google
-    res = @dispatcher.get(URI.parse("http://www.google.co.jp/"))
-    assert_equal(true,     res.success?)
-    assert_equal(:success, res.status)
-    assert_equal(200,      res.http_code)
-    assert_equal("200 OK", res.message)
-    assert_equal(nil,      res.exception)
+    if @real_access
+      res = @dispatcher.get(URI.parse("http://www.google.co.jp/"))
+      assert_equal(true,     res.success?)
+      assert_equal(:success, res.status)
+      assert_equal(200,      res.http_code)
+      assert_equal("200 OK", res.message)
+      assert_equal(nil,      res.exception)
+    end
   end
 
   def test_head
-    # TODO: 実装せよ
+    request = nil
+    musha = Kagemusha.new(@klass)
+    musha.def(:request) { |req| request = req; :ok }
+    musha.swap {
+      assert_equal(:ok, @dispatcher.head(@example_jp))
+    }
+    assert_kind_of(@klass::Request::Head, request)
+    assert_equal(@example_jp, request.uri)
   end
 
   def test_head__request_to_google
-    res = @dispatcher.head(URI.parse("http://www.google.co.jp/"))
-    assert_equal(true,     res.success?)
-    assert_equal(:success, res.status)
-    assert_equal(200,      res.http_code)
-    assert_equal("200 OK", res.message)
-    assert_equal(nil,      res.exception)
+    if @real_access
+      res = @dispatcher.head(URI.parse("http://www.google.co.jp/"))
+      assert_equal(true,     res.success?)
+      assert_equal(:success, res.status)
+      assert_equal(200,      res.http_code)
+      assert_equal("200 OK", res.message)
+      assert_equal(nil,      res.exception)
+    end
   end
 
   def test_post
-    # TODO: 実装せよ
+    request = nil
+    musha = Kagemusha.new(@klass)
+    musha.def(:request) { |req| request = req; :ok }
+    musha.swap {
+      assert_equal(:ok, @dispatcher.post(@example_jp, "body"))
+    }
+    assert_kind_of(@klass::Request::Post, request)
+    assert_equal(@example_jp, request.uri)
+    assert_equal("body",      request.body)
   end
 
   def test_post__request_to_google
-    res = @dispatcher.post(URI.parse("http://www.google.co.jp/"), "")
-    assert_equal(false,    res.success?)
-    assert_equal(:failure, res.status)
-    assert_equal(405,      res.http_code)
-    assert_equal("405 Method Not Allowed", res.message)
-    assert_equal(nil,      res.exception)
+    if @real_access
+      res = @dispatcher.post(URI.parse("http://www.google.co.jp/"), "")
+      assert_equal(false,    res.success?)
+      assert_equal(:failure, res.status)
+      assert_equal(405,      res.http_code)
+      assert_equal("405 Method Not Allowed", res.message)
+      assert_equal(nil,      res.exception)
+    end
   end
 
   def test_setup_http_connector
