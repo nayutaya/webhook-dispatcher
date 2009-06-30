@@ -53,10 +53,22 @@ class WebHookDispatcher
     res = Response.new(
       :success   => http_res.kind_of?(Net::HTTPSuccess),
       :status    => (http_res.kind_of?(Net::HTTPSuccess) ? :success : :failure),
-      :http_code => http_res.code,
+      :http_code => http_res.code.to_i,
       :message   => "#{http_res.code} #{http_res.message}")
 
     return res
+  end
+
+  def get(uri)
+    return self.request(Request::Get.new(uri))
+  end
+
+  def head(uri)
+    return self.request(Request::Head.new(uri))
+  end
+
+  def post(uri, body = nil)
+    return self.request(Request::Post.new(uri, body))
   end
 
   private

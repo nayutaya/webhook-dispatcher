@@ -149,12 +149,39 @@ class CoreTest < Test::Unit::TestCase
     # TODO: 実装せよ
   end
 
+  def test_get__request_to_google
+    res = @dispatcher.get(URI.parse("http://www.google.co.jp/"))
+    assert_equal(true,     res.success?)
+    assert_equal(:success, res.status)
+    assert_equal(200,      res.http_code)
+    assert_equal("200 OK", res.message)
+    assert_equal(nil,      res.exception)
+  end
+
   def test_head
     # TODO: 実装せよ
   end
 
+  def test_head__request_to_google
+    res = @dispatcher.head(URI.parse("http://www.google.co.jp/"))
+    assert_equal(true,     res.success?)
+    assert_equal(:success, res.status)
+    assert_equal(200,      res.http_code)
+    assert_equal("200 OK", res.message)
+    assert_equal(nil,      res.exception)
+  end
+
   def test_post
     # TODO: 実装せよ
+  end
+
+  def test_post__request_to_google
+    res = @dispatcher.post(URI.parse("http://www.google.co.jp/"), "")
+    assert_equal(false,    res.success?)
+    assert_equal(:failure, res.status)
+    assert_equal(405,      res.http_code)
+    assert_equal("405 Method Not Allowed", res.message)
+    assert_equal(nil,      res.exception)
   end
 
   def test_setup_http_connector
