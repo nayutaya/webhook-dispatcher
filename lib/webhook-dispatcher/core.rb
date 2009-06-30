@@ -54,7 +54,7 @@ class WebHookDispatcher
       res = Response.new(
         :status    => (http_res.kind_of?(Net::HTTPSuccess) ? :success : :failure),
         :http_code => http_res.code.to_i,
-        :message   => "#{http_res.code} #{http_res.message}")
+        :message   => http_res.message)
     rescue TimeoutError => e
       res = Response.new(
         :status    => :timeout,

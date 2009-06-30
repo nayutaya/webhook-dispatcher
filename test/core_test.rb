@@ -7,7 +7,7 @@ class CoreTest < Test::Unit::TestCase
     @klass = WebHookDispatcher
     @dispatcher = @klass.new
 
-    @real_access = false
+    @real_access = true
     @example_jp  = URI.parse("http://example.jp/")
     @get_request = @klass::Request::Get.new(@example_jp)
     @http_musha  = Kagemusha.new(Net::HTTP)
@@ -153,8 +153,9 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(true,     response.success?)
     assert_equal(:success, response.status)
     assert_equal(200,      response.http_code)
-    assert_equal("200 OK", response.message)
-    assert_equal(nil,      response.exception)
+
+    assert_equal("OK", response.message)
+    assert_equal(nil, response.exception)
   end
 
   def test_request__201_created
@@ -164,8 +165,9 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(true,     response.success?)
     assert_equal(:success, response.status)
     assert_equal(201,      response.http_code)
-    assert_equal("201 Created", response.message)
-    assert_equal(nil,      response.exception)
+
+    assert_equal("Created", response.message)
+    assert_equal(nil, response.exception)
   end
 
   def test_request__301_moved_permanently
@@ -175,10 +177,9 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(false,    response.success?)
     assert_equal(:failure, response.status)
     assert_equal(301,      response.http_code)
-    assert_equal(
-      "301 Moved Permanently",
-      response.message)
-    assert_equal(nil,      response.exception)
+
+    assert_equal("Moved Permanently", response.message)
+    assert_equal(nil, response.exception)
   end
 
   # TODO: 許可されていないホストに対するHTTPリクエストのテスト
@@ -190,6 +191,7 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(false,    response.success?)
     assert_equal(:timeout, response.status)
     assert_equal(nil,      response.http_code)
+
     assert_equal("timeout.", response.message)
     assert_kind_of(TimeoutError, response.exception)
   end
@@ -201,6 +203,7 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(false,    response.success?)
     assert_equal(:refused, response.status)
     assert_equal(nil,      response.http_code)
+
     assert_equal("connection refused.", response.message)
     assert_kind_of(Errno::ECONNREFUSED, response.exception)
   end
@@ -212,6 +215,7 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(false,  response.success?)
     assert_equal(:reset, response.status)
     assert_equal(nil,    response.http_code)
+
     assert_equal("connection reset by peer.", response.message)
     assert_kind_of(Errno::ECONNRESET, response.exception)
   end
@@ -223,6 +227,7 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(false,  response.success?)
     assert_equal(:error, response.status)
     assert_equal(nil,    response.http_code)
+
     assert_equal("SocketError: message.", response.message)
     assert_kind_of(SocketError, response.exception)
   end
@@ -244,7 +249,7 @@ class CoreTest < Test::Unit::TestCase
       assert_equal(true,     res.success?)
       assert_equal(:success, res.status)
       assert_equal(200,      res.http_code)
-      assert_equal("200 OK", res.message)
+      assert_equal("OK",     res.message)
       assert_equal(nil,      res.exception)
     end
   end
@@ -266,7 +271,7 @@ class CoreTest < Test::Unit::TestCase
       assert_equal(true,     res.success?)
       assert_equal(:success, res.status)
       assert_equal(200,      res.http_code)
-      assert_equal("200 OK", res.message)
+      assert_equal("OK",     res.message)
       assert_equal(nil,      res.exception)
     end
   end
@@ -289,7 +294,7 @@ class CoreTest < Test::Unit::TestCase
       assert_equal(false,    res.success?)
       assert_equal(:failure, res.status)
       assert_equal(405,      res.http_code)
-      assert_equal("405 Method Not Allowed", res.message)
+      assert_equal("Method Not Allowed", res.message)
       assert_equal(nil,      res.exception)
     end
   end
