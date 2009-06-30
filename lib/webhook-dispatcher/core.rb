@@ -2,6 +2,10 @@
 require "net/http"
 require "webhook-dispatcher/version"
 require "webhook-dispatcher/acl"
+require "webhook-dispatcher/request/get"
+require "webhook-dispatcher/request/head"
+require "webhook-dispatcher/request/post"
+require "webhook-dispatcher/response"
 
 class WebHookDispatcher
   def initialize(options = {})
@@ -35,6 +39,24 @@ class WebHookDispatcher
 
   def acl_with(&block)
     self.acl = Acl.with(&block)
+  end
+
+  # TODO: テストせよ
+  def request(request)
+    http_conn = request.create_http_connector
+    http_req  = request.create_http_request
+    setup_http_connector(http_conn)
+    setup_http_request(http_req)
+
+    http_res = http_conn.start { http_conn.request(http_req) }
+
+    res = Response.new(
+      :success   => http_res.kind_of?(Net::HTTPSuccess),
+      :status    => (http_res.kind_of?(Net::HTTPSuccess) ? :success : :failure),
+      :http_code => http_res.code,
+      :message   => "#{http_res.code} #{http_res.message}")
+
+    return res
   end
 
   private

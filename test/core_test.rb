@@ -141,6 +141,22 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(@klass::Acl.allow_all, @dispatcher.acl)
   end
 
+  def test_request
+    # TODO: 実装せよ
+  end
+
+  def test_get
+    # TODO: 実装せよ
+  end
+
+  def test_head
+    # TODO: 実装せよ
+  end
+
+  def test_post
+    # TODO: 実装せよ
+  end
+
   def test_setup_http_connector
     conn = Net::HTTP.new("example.jp")
     assert_equal(nil, conn.open_timeout)
