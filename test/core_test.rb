@@ -8,7 +8,8 @@ class CoreTest < Test::Unit::TestCase
     @dispatcher = @klass.new
 
     @real_access = false
-    @example_jp = URI.parse("http://example.jp/")
+    @example_jp  = URI.parse("http://example.jp/")
+    @get_request = @klass::Request::Get.new(@example_jp)
   end
 
   #
@@ -21,11 +22,11 @@ class CoreTest < Test::Unit::TestCase
     @klass.user_agent   = nil
     @klass.acl          = nil
 
-    wh = @klass.new
-    assert_equal(@klass.default_open_timeout, wh.open_timeout)
-    assert_equal(@klass.default_read_timeout, wh.read_timeout)
-    assert_equal(@klass.default_user_agent,   wh.user_agent)
-    assert_equal(@klass.default_acl,          wh.acl)
+    dispatcher = @klass.new
+    assert_equal(@klass.default_open_timeout, dispatcher.open_timeout)
+    assert_equal(@klass.default_read_timeout, dispatcher.read_timeout)
+    assert_equal(@klass.default_user_agent,   dispatcher.user_agent)
+    assert_equal(@klass.default_acl,          dispatcher.acl)
   end
 
   def test_initialize__class_default
@@ -34,11 +35,11 @@ class CoreTest < Test::Unit::TestCase
     @klass.user_agent   = "3"
     @klass.acl          = @klass::Acl.allow_all
 
-    wh = @klass.new
-    assert_equal(1,   wh.open_timeout)
-    assert_equal(2,   wh.read_timeout)
-    assert_equal("3", wh.user_agent)
-    assert_equal(@klass::Acl.allow_all, wh.acl)
+    dispatcher = @klass.new
+    assert_equal(1,   dispatcher.open_timeout)
+    assert_equal(2,   dispatcher.read_timeout)
+    assert_equal("3", dispatcher.user_agent)
+    assert_equal(@klass::Acl.allow_all, dispatcher.acl)
   end
 
   def test_initialize__parameter
@@ -47,15 +48,15 @@ class CoreTest < Test::Unit::TestCase
     @klass.user_agent   = "3"
     @klass.acl          = @klass::Acl.allow_all
 
-    wh = @klass.new(
+    dispatcher = @klass.new(
       :open_timeout => 4,
       :read_timeout => 5,
       :user_agent   => "6",
       :acl          => @klass::Acl.deny_all)
-    assert_equal(4,   wh.open_timeout)
-    assert_equal(5,   wh.read_timeout)
-    assert_equal("6", wh.user_agent)
-    assert_equal(@klass::Acl.deny_all, wh.acl)
+    assert_equal(4,   dispatcher.open_timeout)
+    assert_equal(5,   dispatcher.read_timeout)
+    assert_equal("6", dispatcher.user_agent)
+    assert_equal(@klass::Acl.deny_all, dispatcher.acl)
   end
 
   def test_initialize__invalid_parameter
@@ -144,18 +145,11 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(@klass::Acl.allow_all, @dispatcher.acl)
   end
 
-  def test_request
-    # TODO: 実装せよ
-  end
-
   def test_request__200_ok
-    musha = Kagemusha.new(Net::HTTP)
-    musha.def(:start) { Net::HTTPOK.new("1.1", "200", "OK") }
+    musha = Kagemusha.new(Net::HTTP).
+      def(:start) { Net::HTTPOK.new("1.1", "200", "OK") }
 
-    response =
-      musha.swap {
-        @dispatcher.request(@klass::Request::Get.new(@example_jp))
-      }
+    response = musha.swap { @dispatcher.request(@get_request) }
     assert_equal(true,     response.success?)
     assert_equal(:success, response.status)
     assert_equal(200,      response.http_code)
@@ -164,13 +158,10 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__201_created
-    musha = Kagemusha.new(Net::HTTP)
-    musha.def(:start) { Net::HTTPCreated.new("1.1", "201", "Created") }
+    musha = Kagemusha.new(Net::HTTP).
+      def(:start) { Net::HTTPCreated.new("1.1", "201", "Created") }
 
-    response =
-      musha.swap {
-        @dispatcher.request(@klass::Request::Get.new(@example_jp))
-      }
+    response = musha.swap { @dispatcher.request(@get_request) }
     assert_equal(true,     response.success?)
     assert_equal(:success, response.status)
     assert_equal(201,      response.http_code)
@@ -179,13 +170,10 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__301_moved_permanently
-    musha = Kagemusha.new(Net::HTTP)
-    musha.def(:start) { Net::HTTPMovedPermanently.new("1.1", "301", "Moved Permanently") }
+    musha = Kagemusha.new(Net::HTTP).
+      def(:start) { Net::HTTPMovedPermanently.new("1.1", "301", "Moved Permanently") }
 
-    response =
-      musha.swap {
-        @dispatcher.request(@klass::Request::Get.new(@example_jp))
-      }
+    response = musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,    response.success?)
     assert_equal(:failure, response.status)
     assert_equal(301,      response.http_code)
@@ -198,13 +186,10 @@ class CoreTest < Test::Unit::TestCase
   # TODO: 許可されていないホストに対するHTTPリクエストのテスト
 
   def test_request__timeout
-    musha = Kagemusha.new(Net::HTTP)
-    musha.def(:start) { raise(TimeoutError) }
+    musha = Kagemusha.new(Net::HTTP).
+      def(:start) { raise(TimeoutError) }
 
-    response =
-      musha.swap {
-        @dispatcher.request(@klass::Request::Get.new(@example_jp))
-      }
+    response = musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,    response.success?)
     assert_equal(:timeout, response.status)
     assert_equal(nil,      response.http_code)
@@ -213,13 +198,10 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__refused
-    musha = Kagemusha.new(Net::HTTP)
-    musha.def(:start) { raise(Errno::ECONNREFUSED) }
+    musha = Kagemusha.new(Net::HTTP).
+      def(:start) { raise(Errno::ECONNREFUSED) }
 
-    response =
-      musha.swap {
-        @dispatcher.request(@klass::Request::Get.new(@example_jp))
-      }
+    response = musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,    response.success?)
     assert_equal(:refused, response.status)
     assert_equal(nil,      response.http_code)
@@ -228,13 +210,10 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__reset
-    musha = Kagemusha.new(Net::HTTP)
-    musha.def(:start) { raise(Errno::ECONNRESET) }
+    musha = Kagemusha.new(Net::HTTP).
+      def(:start) { raise(Errno::ECONNRESET) }
 
-    response =
-      musha.swap {
-        @dispatcher.request(@klass::Request::Get.new(@example_jp))
-      }
+    response = musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,  response.success?)
     assert_equal(:reset, response.status)
     assert_equal(nil,    response.http_code)
@@ -243,13 +222,10 @@ class CoreTest < Test::Unit::TestCase
   end
 
   def test_request__other_error
-    musha = Kagemusha.new(Net::HTTP)
-    musha.def(:start) { raise(SocketError, "message.") }
+    musha = Kagemusha.new(Net::HTTP).
+      def(:start) { raise(SocketError, "message.") }
 
-    response =
-      musha.swap {
-        @dispatcher.request(@klass::Request::Get.new(@example_jp))
-      }
+    response = musha.swap { @dispatcher.request(@get_request) }
     assert_equal(false,  response.success?)
     assert_equal(:error, response.status)
     assert_equal(nil,    response.http_code)
