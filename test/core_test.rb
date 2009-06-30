@@ -235,9 +235,9 @@ class CoreTest < Test::Unit::TestCase
   def test_get
     request = nil
     musha = Kagemusha.new(@klass)
-    musha.def(:request) { |req| request = req; :ok }
+    musha.def(:request) { |req| request = req }
     musha.swap {
-      assert_equal(:ok, @dispatcher.get(@example_jp))
+      @dispatcher.get(@example_jp)
     }
     assert_kind_of(@klass::Request::Get, request)
     assert_equal(@example_jp, request.uri)
@@ -245,21 +245,21 @@ class CoreTest < Test::Unit::TestCase
 
   def test_get__request_to_google
     if @real_access
-      res = @dispatcher.get(URI.parse("http://www.google.co.jp/"))
-      assert_equal(true,     res.success?)
-      assert_equal(:success, res.status)
-      assert_equal(200,      res.http_code)
-      assert_equal("OK",     res.message)
-      assert_equal(nil,      res.exception)
+      response = @dispatcher.get(URI.parse("http://www.google.co.jp/"))
+      assert_equal(true,     response.success?)
+      assert_equal(:success, response.status)
+      assert_equal(200,      response.http_code)
+      assert_equal("OK",     response.message)
+      assert_equal(nil,      response.exception)
     end
   end
 
   def test_head
     request = nil
     musha = Kagemusha.new(@klass)
-    musha.def(:request) { |req| request = req; :ok }
+    musha.def(:request) { |req| request = req }
     musha.swap {
-      assert_equal(:ok, @dispatcher.head(@example_jp))
+      @dispatcher.head(@example_jp)
     }
     assert_kind_of(@klass::Request::Head, request)
     assert_equal(@example_jp, request.uri)
@@ -267,21 +267,21 @@ class CoreTest < Test::Unit::TestCase
 
   def test_head__request_to_google
     if @real_access
-      res = @dispatcher.head(URI.parse("http://www.google.co.jp/"))
-      assert_equal(true,     res.success?)
-      assert_equal(:success, res.status)
-      assert_equal(200,      res.http_code)
-      assert_equal("OK",     res.message)
-      assert_equal(nil,      res.exception)
+      response = @dispatcher.head(URI.parse("http://www.google.co.jp/"))
+      assert_equal(true,     response.success?)
+      assert_equal(:success, response.status)
+      assert_equal(200,      response.http_code)
+      assert_equal("OK",     response.message)
+      assert_equal(nil,      response.exception)
     end
   end
 
   def test_post
     request = nil
     musha = Kagemusha.new(@klass)
-    musha.def(:request) { |req| request = req; :ok }
+    musha.def(:request) { |req| request = req }
     musha.swap {
-      assert_equal(:ok, @dispatcher.post(@example_jp, "body"))
+      @dispatcher.post(@example_jp, "body")
     }
     assert_kind_of(@klass::Request::Post, request)
     assert_equal(@example_jp, request.uri)
@@ -290,33 +290,33 @@ class CoreTest < Test::Unit::TestCase
 
   def test_post__request_to_google
     if @real_access
-      res = @dispatcher.post(URI.parse("http://www.google.co.jp/"), "")
-      assert_equal(false,    res.success?)
-      assert_equal(:failure, res.status)
-      assert_equal(405,      res.http_code)
-      assert_equal("Method Not Allowed", res.message)
-      assert_equal(nil,      res.exception)
+      response = @dispatcher.post(URI.parse("http://www.google.co.jp/"), "")
+      assert_equal(false,    response.success?)
+      assert_equal(:failure, response.status)
+      assert_equal(405,      response.http_code)
+      assert_equal("Method Not Allowed", response.message)
+      assert_equal(nil,      response.exception)
     end
   end
 
   def test_setup_http_connector
-    conn = Net::HTTP.new("example.jp")
-    assert_equal(nil, conn.open_timeout)
-    assert_equal(60,  conn.read_timeout)
+    connector = Net::HTTP.new("example.jp")
+    assert_equal(nil, connector.open_timeout)
+    assert_equal(60,  connector.read_timeout)
 
     @dispatcher.open_timeout = 10
     @dispatcher.read_timeout = 20
-    @dispatcher.instance_eval { setup_http_connector(conn) }
-    assert_equal(10, conn.open_timeout)
-    assert_equal(20, conn.read_timeout)
+    @dispatcher.instance_eval { setup_http_connector(connector) }
+    assert_equal(10, connector.open_timeout)
+    assert_equal(20, connector.read_timeout)
   end
 
   def test_setup_http_request
-    req = Net::HTTP::Get.new("/")
-    assert_equal(nil, req["User-Agent"])
+    response = Net::HTTP::Get.new("/")
+    assert_equal(nil, response["User-Agent"])
 
     @dispatcher.user_agent = "safari"
-    @dispatcher.instance_eval { setup_http_request(req) }
-    assert_equal("safari", req["User-Agent"])
+    @dispatcher.instance_eval { setup_http_request(response) }
+    assert_equal("safari", response["User-Agent"])
   end
 end

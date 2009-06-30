@@ -41,43 +41,42 @@ class WebHookDispatcher
     self.acl = Acl.with(&block)
   end
 
-  # TODO: テストせよ
   def request(request)
     http_conn = request.create_http_connector
     http_req  = request.create_http_request
     setup_http_connector(http_conn)
     setup_http_request(http_req)
 
+    # TODO: アクセス制御リスト（ACL）による制御
+
     begin
       http_res = http_conn.start { http_conn.request(http_req) }
 
-      res = Response.new(
+      return Response.new(
         :status    => (http_res.kind_of?(Net::HTTPSuccess) ? :success : :failure),
         :http_code => http_res.code.to_i,
         :message   => http_res.message)
     rescue TimeoutError => e
-      res = Response.new(
+      return Response.new(
         :status    => :timeout,
         :message   => "timeout.",
         :exception => e)
     rescue Errno::ECONNREFUSED => e
-      res = Response.new(
+      return Response.new(
         :status    => :refused,
         :message   => "connection refused.",
         :exception => e)
     rescue Errno::ECONNRESET => e
-      res = Response.new(
+      return Response.new(
         :status    => :reset,
         :message   => "connection reset by peer.",
         :exception => e)
     rescue => e
-      res = Response.new(
+      return Response.new(
         :status    => :error,
         :message   => "#{e.class}: #{e.message}",
         :exception => e)
     end
-
-    return res
   end
 
   def get(uri)
