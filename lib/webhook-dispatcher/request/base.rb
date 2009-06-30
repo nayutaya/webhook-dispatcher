@@ -14,6 +14,10 @@ class WebHookDispatcher::Request::Base
 
   attr_accessor :uri
 
+  def create_http_connector
+    return Net::HTTP.new(self.uri.host, self.uri.port)
+  end
+
   def create_http_request
     raise(NotImplementedError)
   end

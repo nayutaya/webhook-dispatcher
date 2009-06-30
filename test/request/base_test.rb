@@ -6,8 +6,8 @@ class RequestBaseTest < Test::Unit::TestCase
   def setup
     @klass = WebHookDispatcher::Request::Base
 
-    @example_jp  = URI.parse("http://example.jp")
-    @example_com = URI.parse("http://example.com")
+    @example_jp  = URI.parse("http://example.jp:8080")
+    @example_com = URI.parse("http://example.com:8080")
   end
 
   #
@@ -28,6 +28,13 @@ class RequestBaseTest < Test::Unit::TestCase
     assert_equal(@example_jp, req.uri)
     req.uri = @example_com
     assert_equal(@example_com, req.uri)
+  end
+
+  def test_create_http_connector
+    conn = @klass.new(@example_jp).create_http_connector
+    assert_kind_of(Net::HTTP, conn)
+    assert_equal(@example_jp.host, conn.address)
+    assert_equal(@example_jp.port, conn.port)
   end
 
   def test_create_http_request
