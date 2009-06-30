@@ -39,6 +39,12 @@ class WebHookDispatcher
 
   private
 
+  def setup_http_connector(http_conn)
+    http_conn.open_timeout = self.open_timeout
+    http_conn.read_timeout = self.read_timeout
+    return http_conn
+  end
+
   def setup_http_request(http_request)
     http_request["User-Agent"] = self.user_agent
     http_request

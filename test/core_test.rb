@@ -141,6 +141,18 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(@klass::Acl.allow_all, @dispatcher.acl)
   end
 
+  def test_setup_http_connector
+    conn = Net::HTTP.new("example.jp")
+    assert_equal(nil, conn.open_timeout)
+    assert_equal(60,  conn.read_timeout)
+
+    @dispatcher.open_timeout = 10
+    @dispatcher.read_timeout = 20
+    @dispatcher.instance_eval { setup_http_connector(conn) }
+    assert_equal(10, conn.open_timeout)
+    assert_equal(20, conn.read_timeout)
+  end
+
   def test_setup_http_request
     req = Net::HTTP::Get.new("/")
     assert_equal(nil, req["User-Agent"])
