@@ -36,4 +36,11 @@ class WebHookDispatcher
   def acl_with(&block)
     self.acl = Acl.with(&block)
   end
+
+  private
+
+  def setup_http_request(http_request)
+    http_request["User-Agent"] = self.user_agent
+    http_request
+  end
 end

@@ -140,4 +140,13 @@ class CoreTest < Test::Unit::TestCase
     }
     assert_equal(@klass::Acl.allow_all, @dispatcher.acl)
   end
+
+  def test_setup_http_request
+    req = Net::HTTP::Get.new("/")
+    assert_equal(nil, req["User-Agent"])
+
+    @dispatcher.user_agent = "safari"
+    @dispatcher.instance_eval { setup_http_request(req) }
+    assert_equal("safari", req["User-Agent"])
+  end
 end
