@@ -195,6 +195,68 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(nil,      response.exception)
   end
 
+  # TODO: 許可されていないホストに対するHTTPリクエストのテスト
+
+  def test_request__timeout
+    musha = Kagemusha.new(Net::HTTP)
+    musha.def(:start) { raise(TimeoutError) }
+
+    response =
+      musha.swap {
+        @dispatcher.request(@klass::Request::Get.new(@example_jp))
+      }
+    assert_equal(false,    response.success?)
+    assert_equal(:timeout, response.status)
+    assert_equal(nil,      response.http_code)
+    assert_equal("timeout.", response.message)
+    assert_kind_of(TimeoutError, response.exception)
+  end
+
+  def test_request__refused
+    musha = Kagemusha.new(Net::HTTP)
+    musha.def(:start) { raise(Errno::ECONNREFUSED) }
+
+    response =
+      musha.swap {
+        @dispatcher.request(@klass::Request::Get.new(@example_jp))
+      }
+    assert_equal(false,    response.success?)
+    assert_equal(:refused, response.status)
+    assert_equal(nil,      response.http_code)
+    assert_equal("connection refused.", response.message)
+    assert_kind_of(Errno::ECONNREFUSED, response.exception)
+  end
+
+  def test_request__reset
+    musha = Kagemusha.new(Net::HTTP)
+    musha.def(:start) { raise(Errno::ECONNRESET) }
+
+    response =
+      musha.swap {
+        @dispatcher.request(@klass::Request::Get.new(@example_jp))
+      }
+    assert_equal(false,  response.success?)
+    assert_equal(:reset, response.status)
+    assert_equal(nil,    response.http_code)
+    assert_equal("connection reset by peer.", response.message)
+    assert_kind_of(Errno::ECONNRESET, response.exception)
+  end
+
+  def test_request__other_error
+    musha = Kagemusha.new(Net::HTTP)
+    musha.def(:start) { raise(SocketError, "message.") }
+
+    response =
+      musha.swap {
+        @dispatcher.request(@klass::Request::Get.new(@example_jp))
+      }
+    assert_equal(false,  response.success?)
+    assert_equal(:error, response.status)
+    assert_equal(nil,    response.http_code)
+    assert_equal("SocketError: message.", response.message)
+    assert_kind_of(SocketError, response.exception)
+  end
+
   def test_get
     request = nil
     musha = Kagemusha.new(@klass)

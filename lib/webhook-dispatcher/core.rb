@@ -48,13 +48,39 @@ class WebHookDispatcher
     setup_http_connector(http_conn)
     setup_http_request(http_req)
 
-    http_res = http_conn.start { http_conn.request(http_req) }
+    begin
+      http_res = http_conn.start { http_conn.request(http_req) }
 
-    res = Response.new(
-      :success   => http_res.kind_of?(Net::HTTPSuccess),
-      :status    => (http_res.kind_of?(Net::HTTPSuccess) ? :success : :failure),
-      :http_code => http_res.code.to_i,
-      :message   => "#{http_res.code} #{http_res.message}")
+      res = Response.new(
+        :success   => http_res.kind_of?(Net::HTTPSuccess),
+        :status    => (http_res.kind_of?(Net::HTTPSuccess) ? :success : :failure),
+        :http_code => http_res.code.to_i,
+        :message   => "#{http_res.code} #{http_res.message}")
+    rescue TimeoutError => e
+      res = Response.new(
+        :success   => false,
+        :status    => :timeout,
+        :message   => "timeout.",
+        :exception => e)
+    rescue Errno::ECONNREFUSED => e
+      res = Response.new(
+        :success   => false,
+        :status    => :refused,
+        :message   => "connection refused.",
+        :exception => e)
+    rescue Errno::ECONNRESET => e
+      res = Response.new(
+        :success   => false,
+        :status    => :reset,
+        :message   => "connection reset by peer.",
+        :exception => e)
+    rescue => e
+      res = Response.new(
+        :success   => false,
+        :status    => :error,
+        :message   => "#{e.class}: #{e.message}",
+        :exception => e)
+    end
 
     return res
   end
