@@ -9,25 +9,25 @@ class ResponseTest < Test::Unit::TestCase
   end
 
   def test_initialize
-    res = @klass.new(
+    response = @klass.new(
       :status    => :success,
       :http_code => 200,
       :message   => "OK",
       :exception => RuntimeError.new)
-    assert_equal(true,     res.success?)
-    assert_equal(:success, res.status)
-    assert_equal(200,      res.http_code)
-    assert_equal("OK",     res.message)
-    assert_kind_of(RuntimeError, res.exception)
+    assert_equal(true,     response.success?)
+    assert_equal(:success, response.status)
+    assert_equal(200,      response.http_code)
+    assert_equal("OK",     response.message)
+    assert_kind_of(RuntimeError, response.exception)
   end
 
   def test_initialize__default
-    res = @klass.new
-    assert_equal(false,    res.success?)
-    assert_equal(:unknown, res.status)
-    assert_equal(nil,      res.http_code)
-    assert_equal(nil,      res.message)
-    assert_equal(nil,      res.exception)
+    response = @klass.new
+    assert_equal(false,    response.success?)
+    assert_equal(:unknown, response.status)
+    assert_equal(nil,      response.http_code)
+    assert_equal(nil,      response.message)
+    assert_equal(nil,      response.exception)
   end
 
   def test_initialize__invalid_parameter
