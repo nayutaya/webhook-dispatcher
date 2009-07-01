@@ -9,26 +9,27 @@ class WebHookDispatcher
 end
 
 class WebHookDispatcher::Acl::EntryBase
-  def initialize(options = :all)
-    @addr = IPAddr.new("0.0.0.0/0")
-    @name = nil
-    @port = 0..65535
+  AnyAddress   = IPAddr.new("0.0.0.0/0")
+  TcpPortRange = 0..65535
 
+  def initialize(options = :all)
     case options
     when :all, {}
-      # nop
+      @addr = AnyAddress
+      @name = nil
+      @port = TcpPortRange
     when Hash
       options = options.dup
       addr = options.delete(:addr)
       name = options.delete(:name)
-      port = options.delete(:port)
+      port = options.delete(:port) || :all
       raise(ArgumentError) unless options.empty?
 
       @addr, @name =
         case [addr, name].map(&:nil?)
         when [false, true ] then [normalize_addr(addr), nil]
         when [true , false] then [nil, normalize_name(name)]
-        when [true , true ] then [@addr, @name]
+        when [true , true ] then [AnyAddress, nil]
         else raise(ArgumentError)
         end
       @port = normalize_port(port)
@@ -49,7 +50,7 @@ class WebHookDispatcher::Acl::EntryBase
 
   def normalize_addr(addr)
     case addr
-    when :all   then return IPAddr.new("0.0.0.0/0")
+    when :all   then return AnyAddress
     when String then return IPAddr.new(addr)
     when IPAddr then return addr
     else raise(ArgumentError)
@@ -66,8 +67,7 @@ class WebHookDispatcher::Acl::EntryBase
 
   def normalize_port(port)
     case port
-    when nil     then (0..65535)
-    when :all    then (0..65535)
+    when :all    then TcpPortRange
     when Integer then [port]
     when Array   then port.sort
     when Range   then port
