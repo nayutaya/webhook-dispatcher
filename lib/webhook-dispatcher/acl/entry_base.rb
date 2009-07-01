@@ -78,4 +78,13 @@ class WebHookDispatcher::Acl::EntryBase
   def match_addr?(addr)
     return self.addr.include?(addr)
   end
+
+  def match_name?(name)
+    return true if self.name.nil?
+    return (self.name === name.downcase)
+  end
+
+  def match_port?(port)
+    return self.port.include?(port)
+  end
 end

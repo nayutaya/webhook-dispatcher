@@ -99,8 +99,8 @@ class EntryBaseTest < Test::Unit::TestCase
       @klass.new.to_a)
   end
 
-  def test_match_addr
-    entry = @klass.new(:addr => :all)
+  def test_match_addr?
+    entry = @klass.new
     assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("10.0.0.0")) })
     assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("172.16.0.0")) })
     assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("192.168.0.0")) })
@@ -109,5 +109,41 @@ class EntryBaseTest < Test::Unit::TestCase
     assert_equal(true,  entry.instance_eval { match_addr?(IPAddr.new("10.0.0.0")) })
     assert_equal(false, entry.instance_eval { match_addr?(IPAddr.new("172.16.0.0")) })
     assert_equal(false, entry.instance_eval { match_addr?(IPAddr.new("192.168.0.0")) })
+  end
+
+  def test_match_name?
+    entry = @klass.new
+    assert_equal(true, entry.instance_eval { match_name?("localhost") })
+    assert_equal(true, entry.instance_eval { match_name?("google.co.jp") })
+
+    entry = @klass.new(:name => "LocalHost")
+    assert_equal(true,  entry.instance_eval { match_name?("localhost") })
+    assert_equal(false, entry.instance_eval { match_name?("google.co.jp") })
+
+    entry = @klass.new(:name => /\.co\.jp$/)
+    assert_equal(false, entry.instance_eval { match_name?("localhost") })
+    assert_equal(true,  entry.instance_eval { match_name?("google.co.jp") })
+  end
+
+  def test_match_port?
+    entry = @klass.new
+    assert_equal(true, entry.instance_eval { match_port?(0) })
+    assert_equal(true, entry.instance_eval { match_port?(1) })
+    assert_equal(true, entry.instance_eval { match_port?(2) })
+
+    entry = @klass.new(:port => 1)
+    assert_equal(false, entry.instance_eval { match_port?(0) })
+    assert_equal(true,  entry.instance_eval { match_port?(1) })
+    assert_equal(false, entry.instance_eval { match_port?(2) })
+
+    entry = @klass.new(:port => [0, 1])
+    assert_equal(true,  entry.instance_eval { match_port?(0) })
+    assert_equal(true,  entry.instance_eval { match_port?(1) })
+    assert_equal(false, entry.instance_eval { match_port?(2) })
+
+    entry = @klass.new(:port => 1..2)
+    assert_equal(false, entry.instance_eval { match_port?(0) })
+    assert_equal(true,  entry.instance_eval { match_port?(1) })
+    assert_equal(true,  entry.instance_eval { match_port?(2) })
   end
 end
