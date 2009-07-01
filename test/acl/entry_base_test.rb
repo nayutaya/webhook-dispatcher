@@ -7,13 +7,71 @@ class EntryBaseTest < Test::Unit::TestCase
     @klass = WebHookDispatcher::Acl::EntryBase
   end
 
-  def test_initialize1
+  def test_initialize__default
     entry = @klass.new
-    assert_equal(IPAddr.new("0.0.0.0/0"), entry.addr)
-    assert_equal(nil, entry.name)
-    assert_equal((0..65535), entry.port)
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
+      entry.to_a)
   end
 
+  def test_initialize__all
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
+      @klass.new(:all).to_a)
+  end
+
+  def test_initialize__all2
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
+      @klass.new({}).to_a)
+  end
+
+  def test_initialize__addr_all
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
+      @klass.new(:addr => :all).to_a)
+  end
+
+  def test_initialize__addr_str
+    assert_equal(
+      [IPAddr.new("127.0.0.1/32"), nil, (0..65535)],
+      @klass.new(:addr => "127.0.0.1").to_a)
+  end
+
+  def test_initialize__addr_obj
+    assert_equal(
+      [IPAddr.new("127.0.0.0/8"), nil, (0..65535)],
+      @klass.new(:addr => IPAddr.new("127.0.0.0/8")).to_a)
+  end
+
+  def test_initialize__addr_invalid
+    assert_raise(ArgumentError) {
+      @klass.new(:addr => true)
+    }
+  end
+
+  def test_initialize__name_str
+    assert_equal(
+      [nil, "www.google.co.jp", (0..65535)],
+      @klass.new(:name => "WWW.GOOGLE.CO.JP").to_a)
+  end
+
+  def test_initialize__name_regexp
+    assert_equal(
+      [nil, /google\.co\.jp/, (0..65535)],
+      @klass.new(:name => /google\.co\.jp/).to_a)
+  end
+
+  def test_initialize__name_invalid
+    assert_raise(ArgumentError) {
+      @klass.new(:name => true)
+    }
+  end
+
+  def test_initialize__addr_and_name
+#    assert_raise(ArgumentError) {
+#    }
+  end
   #
   # インスタンスメソッド
   #
