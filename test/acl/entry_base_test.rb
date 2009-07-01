@@ -18,6 +18,12 @@ class EntryBaseTest < Test::Unit::TestCase
   # インスタンスメソッド
   #
 
+  def test_value
+    assert_raise(NotImplementedError) {
+      @klass.new.value
+    }
+  end
+
   def test_to_a
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],

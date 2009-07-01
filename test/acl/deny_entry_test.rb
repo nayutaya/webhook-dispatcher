@@ -7,7 +7,7 @@ class DenyEntryTest < Test::Unit::TestCase
     @klass = WebHookDispatcher::Acl::DenyEntry
   end
 
-  def test_ok
-    assert true
+  def test_value
+    assert_equal(false, @klass.new.value)
   end
 end

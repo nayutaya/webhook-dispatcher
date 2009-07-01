@@ -17,6 +17,10 @@ class WebHookDispatcher::Acl::EntryBase
 
   attr_reader :addr, :name, :port
 
+  def value
+    raise(NotImplementedError)
+  end
+
   def to_a
     return [@addr, @name, @port]
   end

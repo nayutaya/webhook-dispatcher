@@ -7,7 +7,11 @@ class AllowEntryTest < Test::Unit::TestCase
     @klass = WebHookDispatcher::Acl::AllowEntry
   end
 
-  def test_ok
-    assert true
+  #
+  # インスタンスメソッド
+  #
+
+  def test_value
+    assert_equal(true, @klass.new.value)
   end
 end
