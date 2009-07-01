@@ -74,4 +74,8 @@ class WebHookDispatcher::Acl::EntryBase
     else raise(ArgumentError)
     end
   end
+
+  def match_addr?(addr)
+    return self.addr.include?(addr)
+  end
 end

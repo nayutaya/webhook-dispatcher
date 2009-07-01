@@ -98,4 +98,16 @@ class EntryBaseTest < Test::Unit::TestCase
       [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
       @klass.new.to_a)
   end
+
+  def test_match_addr
+    entry = @klass.new(:addr => :all)
+    assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("10.0.0.0")) })
+    assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("172.16.0.0")) })
+    assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("192.168.0.0")) })
+
+    entry = @klass.new(:addr => "10.0.0.0/8")
+    assert_equal(true,  entry.instance_eval { match_addr?(IPAddr.new("10.0.0.0")) })
+    assert_equal(false, entry.instance_eval { match_addr?(IPAddr.new("172.16.0.0")) })
+    assert_equal(false, entry.instance_eval { match_addr?(IPAddr.new("192.168.0.0")) })
+  end
 end
