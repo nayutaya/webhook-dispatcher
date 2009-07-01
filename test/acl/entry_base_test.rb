@@ -18,81 +18,54 @@ class EntryBaseTest < Test::Unit::TestCase
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
       @klass.new(:all).to_a)
-  end
-
-  def test_initialize__all2
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
       @klass.new({}).to_a)
   end
 
-  def test_initialize__addr_all
+  def test_initialize__addr
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
       @klass.new(:addr => :all).to_a)
-  end
-
-  def test_initialize__addr_str
     assert_equal(
       [IPAddr.new("127.0.0.1/32"), nil, (0..65535)],
       @klass.new(:addr => "127.0.0.1").to_a)
-  end
-
-  def test_initialize__addr_obj
     assert_equal(
       [IPAddr.new("127.0.0.0/8"), nil, (0..65535)],
       @klass.new(:addr => IPAddr.new("127.0.0.0/8")).to_a)
-  end
 
-  def test_initialize__addr_invalid
     assert_raise(ArgumentError) {
-      @klass.new(:addr => true)
+      @klass.new(:addr => :invalid)
     }
   end
 
-  def test_initialize__name_str
+  def test_initialize__name
     assert_equal(
       [nil, "www.google.co.jp", (0..65535)],
       @klass.new(:name => "WWW.GOOGLE.CO.JP").to_a)
-  end
-
-  def test_initialize__name_regexp
     assert_equal(
       [nil, /google\.co\.jp/, (0..65535)],
       @klass.new(:name => /google\.co\.jp/).to_a)
-  end
 
-  def test_initialize__name_invalid
     assert_raise(ArgumentError) {
-      @klass.new(:name => true)
+      @klass.new(:name => :invalid)
     }
   end
 
-  def test_initialize__port_all
+  def test_initialize__port
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
       @klass.new(:port => :all).to_a)
-  end
-
-  def test_initialize__port_num
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, [80]],
       @klass.new(:port => 80).to_a)
-  end
-
-  def test_initialize__port_array
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, [1, 2, 3]],
       @klass.new(:port => [3, 2, 1]).to_a)
-  end
-
-  def test_initialize__port_array
     assert_equal(
       [IPAddr.new("0.0.0.0/0"), nil, (1..3)],
       @klass.new(:port => (1..3)).to_a)
-  end
 
-  def test_initialize__port_invalid
     assert_raise(ArgumentError) {
       @klass.new(:port => true)
     }
@@ -109,6 +82,7 @@ class EntryBaseTest < Test::Unit::TestCase
       @klass.new(:invalid => true)
     }
   end
+
   #
   # インスタンスメソッド
   #
