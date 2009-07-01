@@ -68,9 +68,46 @@ class EntryBaseTest < Test::Unit::TestCase
     }
   end
 
+  def test_initialize__port_all
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
+      @klass.new(:port => :all).to_a)
+  end
+
+  def test_initialize__port_num
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, [80]],
+      @klass.new(:port => 80).to_a)
+  end
+
+  def test_initialize__port_array
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, [1, 2, 3]],
+      @klass.new(:port => [3, 2, 1]).to_a)
+  end
+
+  def test_initialize__port_array
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, (1..3)],
+      @klass.new(:port => (1..3)).to_a)
+  end
+
+  def test_initialize__port_invalid
+    assert_raise(ArgumentError) {
+      @klass.new(:port => true)
+    }
+  end
+
   def test_initialize__addr_and_name
-#    assert_raise(ArgumentError) {
-#    }
+    assert_raise(ArgumentError) {
+      @klass.new(:addr => "127.0.0.1", :name => "localhost")
+    }
+  end
+
+  def test_initialize__invalid_key
+    assert_raise(ArgumentError) {
+      @klass.new(:invalid => true)
+    }
   end
   #
   # インスタンスメソッド

@@ -15,24 +15,23 @@ class WebHookDispatcher::Acl::EntryBase
     @port = 0..65535
 
     case options
-    when :all
-      # nop
-    when {}
+    when :all, {}
       # nop
     when Hash
       options = options.dup
       addr = options.delete(:addr)
       name = options.delete(:name)
+      port = options.delete(:port)
+      raise(ArgumentError) unless options.empty?
 
-      if addr
-        @addr = normalize_addr(addr)
-        @name = nil
-      elsif name
-        @addr = nil
-        @name = normalize_name(name)
-      else
-        #raise(ArgumentError)
-      end
+      @addr, @name =
+        case [addr, name].map(&:nil?)
+        when [false, true ] then [normalize_addr(addr), nil]
+        when [true , false] then [nil, normalize_name(name)]
+        when [true , true ] then [@addr, @name]
+        else raise(ArgumentError)
+        end
+      @port = normalize_port(port)
     end
   end
 
@@ -61,6 +60,17 @@ class WebHookDispatcher::Acl::EntryBase
     case name
     when String then name.downcase
     when Regexp then name
+    else raise(ArgumentError)
+    end
+  end
+
+  def normalize_port(port)
+    case port
+    when nil     then (0..65535)
+    when :all    then (0..65535)
+    when Integer then [port]
+    when Array   then port.sort
+    when Range   then port
     else raise(ArgumentError)
     end
   end
