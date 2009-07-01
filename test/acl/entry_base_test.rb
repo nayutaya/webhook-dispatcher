@@ -7,7 +7,20 @@ class EntryBaseTest < Test::Unit::TestCase
     @klass = WebHookDispatcher::Acl::EntryBase
   end
 
-  def test_ok
-    assert true
+  def test_initialize1
+    entry = @klass.new
+    assert_equal(IPAddr.new("0.0.0.0/0"), entry.addr)
+    assert_equal(nil, entry.name)
+    assert_equal((0..65535), entry.port)
+  end
+
+  #
+  # インスタンスメソッド
+  #
+
+  def test_to_a
+    assert_equal(
+      [IPAddr.new("0.0.0.0/0"), nil, (0..65535)],
+      @klass.new.to_a)
   end
 end
