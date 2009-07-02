@@ -39,6 +39,10 @@ class WebHookDispatcher::Acl::EntryBase
 
   attr_reader :addr, :name, :port
 
+  def match?(addr, name, port)
+    return match_address?(addr) && match_name?(name)
+  end
+
   def value
     raise(NotImplementedError)
   end

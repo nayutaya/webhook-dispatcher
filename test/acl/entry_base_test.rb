@@ -90,6 +90,34 @@ class EntryBaseTest < Test::Unit::TestCase
   # インスタンスメソッド
   #
 
+  def test_match__all
+    entry = @klass.new
+    assert_equal(true, entry.match?(nil, nil, nil))
+    assert_equal(true, entry.match?("127.0.0.1", nil, nil))
+    assert_equal(true, entry.match?(nil, "localhost", nil))
+    assert_equal(true, entry.match?(nil, nil, 80))
+  end
+
+  def test_match__addr
+    entry = @klass.new(:addr => "127.0.0.0/8")
+    assert_equal(false, entry.match?("126.255.255.255", nil, nil))
+    assert_equal(true,  entry.match?("127.0.0.0",       nil, nil))
+    assert_equal(true,  entry.match?("127.255.255.255", nil, nil))
+    assert_equal(false, entry.match?("128.0.0.0",       nil, nil))
+  end
+
+  def test_match__name
+    entry = @klass.new(:name => "localhost")
+    assert_equal(true,  entry.match?(nil, "localhost", nil))
+    assert_equal(true,  entry.match?(nil, "LOCALHOST", nil))
+    assert_equal(false, entry.match?(nil, "google.co.jp", nil))
+
+    entry = @klass.new(:name => /\.co\.jp$/)
+    assert_equal(false, entry.match?(nil, "localhost", nil))
+    assert_equal(true,  entry.match?(nil, "google.co.jp", nil))
+    assert_equal(true,  entry.match?(nil, "nayutaya.co.jp", nil))
+  end
+
   def test_value
     assert_raise(NotImplementedError) {
       @klass.new.value
