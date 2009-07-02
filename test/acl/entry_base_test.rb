@@ -10,28 +10,28 @@ class EntryBaseTest < Test::Unit::TestCase
   def test_initialize__default
     entry = @klass.new
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      [nil, nil, nil],
       entry.to_a)
   end
 
   def test_initialize__all
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      [nil, nil, nil],
       @klass.new(:all).to_a)
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      [nil, nil, nil],
       @klass.new({}).to_a)
   end
 
   def test_initialize__addr
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      [nil, nil, nil],
       @klass.new(:addr => :all).to_a)
     assert_equal(
-      [IPAddr.new("127.0.0.1/32"), //, (0..65535)],
+      [IPAddr.new("127.0.0.1/32"), nil, nil],
       @klass.new(:addr => "127.0.0.1").to_a)
     assert_equal(
-      [IPAddr.new("127.0.0.0/8"), //, (0..65535)],
+      [IPAddr.new("127.0.0.0/8"), nil, nil],
       @klass.new(:addr => IPAddr.new("127.0.0.0/8")).to_a)
 
     assert_raise(ArgumentError) {
@@ -41,13 +41,13 @@ class EntryBaseTest < Test::Unit::TestCase
 
   def test_initialize__name
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      [nil, nil, nil],
       @klass.new(:name => :all).to_a)
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), "www.google.co.jp", (0..65535)],
+      [nil, "www.google.co.jp", nil],
       @klass.new(:name => "WWW.GOOGLE.CO.JP").to_a)
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), /google\.co\.jp/, (0..65535)],
+      [nil, /google\.co\.jp/, nil],
       @klass.new(:name => /google\.co\.jp/).to_a)
 
     assert_raise(ArgumentError) {
@@ -57,16 +57,16 @@ class EntryBaseTest < Test::Unit::TestCase
 
   def test_initialize__port
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      [nil, nil, nil],
       @klass.new(:port => :all).to_a)
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, [80]],
+      [nil, nil, [80]],
       @klass.new(:port => 80).to_a)
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, [1, 2, 3]],
+      [nil, nil, [1, 2, 3]],
       @klass.new(:port => [3, 2, 1]).to_a)
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (1..3)],
+      [nil, nil, (1..3)],
       @klass.new(:port => (1..3)).to_a)
 
     assert_raise(ArgumentError) {
@@ -173,7 +173,7 @@ class EntryBaseTest < Test::Unit::TestCase
 
   def test_to_a
     assert_equal(
-      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      [nil, nil, nil],
       @klass.new.to_a)
   end
 
