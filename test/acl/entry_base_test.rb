@@ -8,13 +8,15 @@ class EntryBaseTest < Test::Unit::TestCase
   end
 
   def test_initialize__default
-    entry = @klass.new
     assert_equal(
       [nil, nil, nil],
-      entry.to_a)
+      @klass.new.to_a)
   end
 
   def test_initialize__all
+    assert_equal(
+      [nil, nil, nil],
+      @klass.new(nil).to_a)
     assert_equal(
       [nil, nil, nil],
       @klass.new(:all).to_a)

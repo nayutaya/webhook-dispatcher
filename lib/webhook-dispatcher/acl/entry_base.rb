@@ -9,9 +9,9 @@ class WebHookDispatcher
 end
 
 class WebHookDispatcher::Acl::EntryBase
-  def initialize(options = :all)
+  def initialize(options = nil)
     case options
-    when :all, {}
+    when nil, :all, {}
       @addr = nil
       @name = nil
       @port = nil
@@ -19,7 +19,7 @@ class WebHookDispatcher::Acl::EntryBase
       options = options.dup
       addr = options.delete(:addr)
       name = options.delete(:name)
-      port = options.delete(:port) || :all
+      port = options.delete(:port)
       raise(ArgumentError) unless options.empty?
 
       @addr, @name =
@@ -57,6 +57,7 @@ class WebHookDispatcher::Acl::EntryBase
 
   def normalize_address(addr)
     case addr
+    when nil    then return nil
     when :all   then return nil
     when String then return IPAddr.new(addr)
     when IPAddr then return addr
@@ -66,41 +67,37 @@ class WebHookDispatcher::Acl::EntryBase
 
   def normalize_name(name)
     case name
-    when :all   then nil
-    when String then name.downcase
-    when Regexp then name
+    when nil    then return nil
+    when :all   then return nil
+    when String then return name.downcase
+    when Regexp then return name
     else raise(ArgumentError)
     end
   end
 
   def normalize_port(port)
     case port
-    when :all    then nil
-    when Integer then [port]
-    when Array   then port.sort
-    when Range   then port
+    when nil     then return nil
+    when :all    then return nil
+    when Integer then return [port]
+    when Array   then return port.sort
+    when Range   then return port
     else raise(ArgumentError)
     end
   end
 
   def match_address?(addr)
-    return false if !self.addr.nil? && addr.nil?
-    return true if addr.nil?
     return true if self.addr.nil?
-    return self.addr.include?(addr)
+    return (!addr.nil? && self.addr.include?(addr))
   end
 
   def match_name?(name)
-    return false if !self.name.nil? && name.nil?
-    return true if name.nil?
     return true if self.name.nil?
-    return (self.name === name.downcase)
+    return (!name.nil? && (self.name === name.downcase))
   end
 
   def match_port?(port)
-    return false if !self.port.nil? && port.nil?
-    return true if port.nil?
     return true if self.port.nil?
-    return self.port.include?(port)
+    return (!port.nil? && self.port.include?(port))
   end
 end
