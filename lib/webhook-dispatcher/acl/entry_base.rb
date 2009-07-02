@@ -77,7 +77,7 @@ class WebHookDispatcher::Acl::EntryBase
     end
   end
 
-  def match_addr?(addr)
+  def match_address?(addr)
     return true if addr.nil?
     return self.addr.include?(addr)
   end
