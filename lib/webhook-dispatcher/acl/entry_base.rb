@@ -11,25 +11,17 @@ end
 class WebHookDispatcher::Acl::EntryBase
   def initialize(options = nil)
     case options
-    when nil, :all, {}
+    when nil, :all
       @addr = nil
       @name = nil
       @port = nil
     when Hash
       options = options.dup
-      addr = options.delete(:addr)
-      name = options.delete(:name)
-      port = options.delete(:port)
+      @addr = normalize_addr(options.delete(:addr))
+      @name = normalize_name(options.delete(:name))
+      @port = normalize_port(options.delete(:port))
       raise(ArgumentError) unless options.empty?
-
-      @addr, @name =
-        case [addr, name].map(&:nil?)
-        when [false, true ] then [normalize_address(addr), nil]
-        when [true , false] then [nil, normalize_name(name)]
-        when [true , true ] then [nil, nil]
-        else raise(ArgumentError)
-        end
-      @port = normalize_port(port)
+      raise(ArgumentError) if !@addr.nil? && !@name.nil?
     else raise(ArgumentError)
     end
   end
@@ -55,7 +47,7 @@ class WebHookDispatcher::Acl::EntryBase
 
   private
 
-  def normalize_address(addr)
+  def normalize_addr(addr)
     case addr
     when nil    then return nil
     when :all   then return nil
