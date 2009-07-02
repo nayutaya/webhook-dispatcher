@@ -31,6 +31,17 @@ class WebHookDispatcher::Acl
     end
   end
 
+  def self.create_matching_targets(addr_or_name, port)
+    if self.ipaddr?(addr_or_name)
+      addr = addr_or_name
+      return [[IPAddr.new(addr), nil, port]]
+    else
+      name = addr_or_name
+      _name, _aliases, _type, *addresses = TCPSocket.gethostbyname(name)
+      return addresses.map { |addr| [IPAddr.new(addr), name, port] }
+    end
+  end
+
   def ==(other)
     return false unless other.instance_of?(self.class)
     return (@entries == other.instance_eval { @entries })

@@ -56,6 +56,30 @@ class AclTest < Test::Unit::TestCase
     assert_equal(false, @klass.ipaddr?("google.co.jp"))
   end
 
+  def test_self_create_matching_targets__addr
+    assert_equal(
+      [[IPAddr.new("127.0.0.1"), nil, 80]],
+      @klass.create_matching_targets("127.0.0.1", 80))
+    assert_equal(
+      [[IPAddr.new("192.168.0.1"), nil, 8080]],
+      @klass.create_matching_targets("192.168.0.1", 8080))
+  end
+
+  def test_self_create_matching_targets__name
+    musha = Kagemusha.new(TCPSocket)
+    musha.defs(:gethostbyname) {
+      ["google.co.jp", [], 2, "72.14.203.104", "74.125.91.104", "74.125.95.104"]
+    }
+    expected = [
+      [IPAddr.new("72.14.203.104"), "google.co.jp", 80],
+      [IPAddr.new("74.125.91.104"), "google.co.jp", 80],
+      [IPAddr.new("74.125.95.104"), "google.co.jp", 80],
+    ]
+    assert_equal(
+      expected,
+      musha.swap { @klass.create_matching_targets("google.co.jp", 80) })
+  end
+
   #
   # インスタンスメソッド
   #
