@@ -40,7 +40,7 @@ class WebHookDispatcher::Acl::EntryBase
   attr_reader :addr, :name, :port
 
   def match?(addr, name, port)
-    return match_address?(addr) && match_name?(name)
+    return match_address?(addr) && match_name?(name) && match_port?(port)
   end
 
   def value

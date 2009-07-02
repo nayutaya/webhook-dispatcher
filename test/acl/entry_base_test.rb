@@ -104,6 +104,11 @@ class EntryBaseTest < Test::Unit::TestCase
     assert_equal(true,  entry.match?("127.0.0.0",       nil, nil))
     assert_equal(true,  entry.match?("127.255.255.255", nil, nil))
     assert_equal(false, entry.match?("128.0.0.0",       nil, nil))
+
+    entry = @klass.new(:addr => "127.0.0.1")
+    assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
+    assert_equal(true,  entry.match?("127.0.0.1", "google.co.jp", 8080))
+    assert_equal(false, entry.match?("192.168.0.1", "localhost", 443))
   end
 
   def test_match__name
@@ -116,6 +121,34 @@ class EntryBaseTest < Test::Unit::TestCase
     assert_equal(false, entry.match?(nil, "localhost", nil))
     assert_equal(true,  entry.match?(nil, "google.co.jp", nil))
     assert_equal(true,  entry.match?(nil, "nayutaya.co.jp", nil))
+
+    entry = @klass.new(:name => "localhost")
+    assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
+    assert_equal(false, entry.match?("127.0.0.1", "google.co.jp", 8080))
+    assert_equal(true,  entry.match?("192.168.0.1", "localhost", 443))
+  end
+
+  def test_match__port
+    entry = @klass.new(:port => 80)
+    assert_equal(false, entry.match?(nil, nil, 79))
+    assert_equal(true,  entry.match?(nil, nil, 80))
+    assert_equal(false, entry.match?(nil, nil, 81))
+  end
+
+  def test_match__addr_and_port
+    entry = @klass.new(:addr => "127.0.0.1", :port => 80)
+    assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
+    assert_equal(true,  entry.match?("127.0.0.1", "google.co.jp", 80))
+    assert_equal(false, entry.match?("127.0.0.1", "localhost", 8080))
+    assert_equal(false, entry.match?("192.168.0.1", "localhost", 80))
+  end
+
+  def test_match_name_and_port
+    entry = @klass.new(:name => "localhost", :port => 80)
+    assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
+    assert_equal(false, entry.match?("127.0.0.1", "google.co.jp", 80))
+    assert_equal(false, entry.match?("127.0.0.1", "localhost", 8080))
+    assert_equal(true,  entry.match?("192.168.0.1", "localhost", 80))
   end
 
   def test_value
