@@ -214,4 +214,29 @@ class AclTest < Test::Unit::TestCase
       assert_equal(false, acl.allow?(addr))
     }
   end
+
+  def test_complex5
+    name, aliases, type, *addresses = TCPSocket.gethostbyname("google.co.jp")
+
+    addresses.each { |addr|
+      acl = @klass.new
+      acl.add_deny(:all)
+      acl.add_allow(:addr => addr)
+      assert_equal(false, acl.allow?("localhost"))
+      assert_equal(false, acl.allow?("yahoo.co.jp"))
+      assert_equal(false, acl.allow?("google.co.jp"))
+      assert_equal(true,  acl.allow?(addr))
+    }
+  end
+
+  def test_complex6
+    name, aliases, type, *addresses = TCPSocket.gethostbyname("google.co.jp")
+
+    @acl.add_deny(:all)
+    addresses.each { |addr| @acl.add_allow(:addr => addr) }
+
+    assert_equal(false, @acl.allow?("localhost"))
+    assert_equal(false, @acl.allow?("yahoo.co.jp"))
+    assert_equal(true,  @acl.allow?("google.co.jp"))
+  end
 end
