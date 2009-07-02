@@ -86,6 +86,12 @@ class EntryBaseTest < Test::Unit::TestCase
     }
   end
 
+  def test_initialize__invalid_parameter
+    assert_raise(ArgumentError) {
+      @klass.new(:invalid)
+    }
+  end
+
   #
   # インスタンスメソッド
   #

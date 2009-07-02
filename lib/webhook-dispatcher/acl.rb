@@ -1,5 +1,7 @@
 
 require "ipaddr"
+require "webhook-dispatcher/acl/allow_entry"
+require "webhook-dispatcher/acl/deny_entry"
 
 # TODO: ポート番号によるアクセス制御
 class WebHookDispatcher::Acl
@@ -28,13 +30,13 @@ class WebHookDispatcher::Acl
     return @records.size
   end
 
-  def add_allow(ipaddr)
-    @records << AllowRecord.new(ipaddr)
+  def add_allow(options)
+    @records << AllowEntry.new(options)
     return self
   end
 
-  def add_deny(ipaddr)
-    @records << DenyRecord.new(ipaddr)
+  def add_deny(options)
+    @records << DenyEntry.new(options)
     return self
   end
 
@@ -45,8 +47,8 @@ class WebHookDispatcher::Acl
 
     this = self
     (class << obj; self; end).class_eval {
-      define_method(:allow) { |ipaddr| this.add_allow(ipaddr) }
-      define_method(:deny)  { |ipaddr| this.add_deny(ipaddr) }
+      define_method(:allow) { |options| this.add_allow(options) }
+      define_method(:deny)  { |options| this.add_deny(options) }
       private :allow, :deny
     }
 
@@ -57,7 +59,7 @@ class WebHookDispatcher::Acl
 
   def allow?(ipaddr)
     return @records.inject(true) { |result, record|
-      result = record.value if record.include?(ipaddr)
+      result = record.value if record.match?(ipaddr, nil, nil)
       result
     }
   end
@@ -66,6 +68,7 @@ class WebHookDispatcher::Acl
     return !self.allow?(ipaddr)
   end
 
+=begin
   class RecordBase
     def initialize(ipaddr)
       @ipaddr =
@@ -100,4 +103,5 @@ class WebHookDispatcher::Acl
       return false
     end
   end
+=end
 end

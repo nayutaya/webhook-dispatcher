@@ -34,6 +34,7 @@ class WebHookDispatcher::Acl::EntryBase
         else raise(ArgumentError)
         end
       @port = normalize_port(port)
+    else raise(ArgumentError)
     end
   end
 
