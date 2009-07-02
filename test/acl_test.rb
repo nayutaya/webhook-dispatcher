@@ -26,7 +26,7 @@ class AclTest < Test::Unit::TestCase
   def test_self_with__allow_and_deny
     acl = @klass.with {
       allow :all
-      deny :all
+      deny  :all
     }
     assert_equal(2, acl.size)
   end
@@ -131,7 +131,7 @@ class AclTest < Test::Unit::TestCase
 
   def test_complex1
     @acl.with {
-      deny :all
+      deny  :all
       allow :addr => "127.0.0.0/8"
     }
 
@@ -157,32 +157,4 @@ class AclTest < Test::Unit::TestCase
     assert_equal(true,  @acl.allow?("192.168.3.0"))
     assert_equal(true,  @acl.allow?("192.168.3.255"))
   end
-
-  #
-  # RecordBaseクラス
-  #
-
-=begin
-  def test_record_base_initialize
-    assert_equal(
-      IPAddr.new("127.0.0.0/8"),
-      @klass::RecordBase.new(IPAddr.new("127.0.0.0/8")).ipaddr)
-    assert_equal(
-      IPAddr.new("127.0.0.0/8"),
-      @klass::RecordBase.new("127.0.0.0/8").ipaddr)
-    assert_equal(
-      IPAddr.new("0.0.0.0/0"),
-      @klass::RecordBase.new(:all).ipaddr)
-
-    assert_raise(ArgumentError) {
-      @klass::RecordBase.new(:invalid)
-    }
-  end
-
-  def test_record_base_equal
-    assert_equal(true,  (@klass::RecordBase.new(:all) == @klass::RecordBase.new(:all)))
-    assert_equal(false, (@klass::RecordBase.new(:all) == @klass::RecordBase.new("127.0.0.0/8")))
-    assert_equal(false, (@klass::RecordBase.new(:all) == nil))
-  end
-=end
 end
