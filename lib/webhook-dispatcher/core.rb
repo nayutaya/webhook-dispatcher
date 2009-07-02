@@ -47,9 +47,13 @@ class WebHookDispatcher
     setup_http_connector(http_conn)
     setup_http_request(http_req)
 
-    # TODO: アクセス制御リスト（ACL）による制御
-
     begin
+      if @acl.deny?(http_conn.address, http_conn.port)
+        return Response.new(
+          :status    => :denied,
+          :message   => "denied.")
+      end
+
       http_res = http_conn.start { http_conn.request(http_req) }
 
       return Response.new(
