@@ -147,17 +147,17 @@ class AclTest < Test::Unit::TestCase
   def test_allow?
     assert_equal(true, @acl.allow?("127.0.0.1"))
     @acl.add_deny(:addr => "127.0.0.0/8")
-    assert_equal(false, @acl.allow?("127.0.0.1"))
-    @acl.add_allow(:addr => "127.0.0.0/8")
-    assert_equal(true, @acl.allow?("127.0.0.1"))
+    assert_equal(false, @acl.allow?("127.0.0.1", 80))
+    @acl.add_allow(:port => 80)
+    assert_equal(true, @acl.allow?("127.0.0.1", 80))
   end
 
   def test_deny?
     assert_equal(false, @acl.deny?("127.0.0.1"))
     @acl.add_deny(:addr => "127.0.0.0/8")
-    assert_equal(true, @acl.deny?("127.0.0.1"))
-    @acl.add_allow(:addr => "127.0.0.0/8")
-    assert_equal(false, @acl.deny?("127.0.0.1"))
+    assert_equal(true, @acl.deny?("127.0.0.1", 80))
+    @acl.add_allow(:port => 80)
+    assert_equal(false, @acl.deny?("127.0.0.1", 80))
   end
 
   def test_complex1
@@ -187,5 +187,17 @@ class AclTest < Test::Unit::TestCase
     assert_equal(false, @acl.allow?("192.168.2.0"))
     assert_equal(true,  @acl.allow?("192.168.3.0"))
     assert_equal(true,  @acl.allow?("192.168.3.255"))
+  end
+
+  def test_complex3
+    @acl.with {
+      deny  :all
+      allow :port => 80
+      deny  :name => "localhost"
+    }
+
+    assert_equal(true,  @acl.allow?("127.0.0.1", 80))
+    assert_equal(false, @acl.allow?("localhost", 80))
+    assert_equal(true,  @acl.allow?("google.co.jp", 80))
   end
 end

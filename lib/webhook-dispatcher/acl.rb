@@ -3,7 +3,6 @@ require "ipaddr"
 require "webhook-dispatcher/acl/allow_entry"
 require "webhook-dispatcher/acl/deny_entry"
 
-# TODO: ポート番号によるアクセス制御
 class WebHookDispatcher::Acl
   def initialize
     @entries = []
@@ -78,14 +77,18 @@ class WebHookDispatcher::Acl
     return self
   end
 
-  def allow?(ipaddr)
-    return @entries.inject(true) { |result, entry|
-      result = entry.value if entry.match?(ipaddr, nil, nil)
-      result
+  def allow?(addr_or_name, port = nil)
+    targets = self.class.create_matching_targets(addr_or_name, port)
+
+    return targets.all? { |taddr, tname, tport|
+      @entries.inject(true) { |result, entry|
+        result = entry.value if entry.match?(taddr, tname, tport)
+        result
+      }
     }
   end
 
-  def deny?(ipaddr)
-    return !self.allow?(ipaddr)
+  def deny?(addr_or_name, port = nil)
+    return !self.allow?(addr_or_name, port)
   end
 end
