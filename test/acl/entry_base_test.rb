@@ -90,6 +90,14 @@ class EntryBaseTest < Test::Unit::TestCase
   # インスタンスメソッド
   #
 
+  def test_equal
+    assert_equal(true,  (@klass.new == @klass.new))
+    assert_equal(false, (@klass.new == nil))
+    assert_equal(false, (@klass.new == @klass.new(:addr => "127.0.0.1")))
+    assert_equal(false, (@klass.new == @klass.new(:name => "localhost")))
+    assert_equal(false, (@klass.new == @klass.new(:port => 80)))
+  end
+
   def test_match__all
     entry = @klass.new
     assert_equal(true, entry.match?(nil, nil, nil))

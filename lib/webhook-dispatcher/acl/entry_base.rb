@@ -39,6 +39,11 @@ class WebHookDispatcher::Acl::EntryBase
 
   attr_reader :addr, :name, :port
 
+  def ==(other)
+    return false unless other.instance_of?(self.class)
+    return (self.to_a == other.to_a)
+  end
+
   def match?(addr, name, port)
     return match_address?(addr) && match_name?(name) && match_port?(port)
   end
