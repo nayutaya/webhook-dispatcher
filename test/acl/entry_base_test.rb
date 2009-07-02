@@ -233,13 +233,4 @@ class EntryBaseTest < Test::Unit::TestCase
     assert_equal(true,  entry.instance_eval { match_port?(1) })
     assert_equal(true,  entry.instance_eval { match_port?(2) })
   end
-
-  def test_is_ipaddr?
-    entry = @klass.new
-
-    assert_equal(true,  entry.instance_eval { is_ipaddr?("127.0.0.1") })
-    assert_equal(true,  entry.instance_eval { is_ipaddr?(IPAddr.new("127.0.0.1")) })
-    assert_equal(false, entry.instance_eval { is_ipaddr?("localhost") })
-    assert_equal(false, entry.instance_eval { is_ipaddr?("google.co.jp") })
-  end
 end

@@ -101,14 +101,4 @@ class WebHookDispatcher::Acl::EntryBase
     return true if port.nil?
     return self.port.include?(port)
   end
-
-  def is_ipaddr?(value)
-    return true if value.instance_of?(IPAddr)
-    begin
-      IPAddr.new(value)
-      return true
-    rescue ArgumentError
-      return false
-    end
-  end
 end

@@ -20,6 +20,16 @@ class WebHookDispatcher::Acl
   def self.deny_all
     return self.with { deny :all }
   end
+  
+  def self.ipaddr?(value)
+    return true if value.instance_of?(IPAddr)
+    begin
+      IPAddr.new(value)
+      return true
+    rescue ArgumentError
+      return false
+    end
+  end
 
   def ==(other)
     return false unless other.instance_of?(self.class)

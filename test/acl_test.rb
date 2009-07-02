@@ -49,6 +49,13 @@ class AclTest < Test::Unit::TestCase
       @klass.deny_all)
   end
 
+  def test_self_ipaddr?
+    assert_equal(true,  @klass.ipaddr?("127.0.0.1"))
+    assert_equal(true,  @klass.ipaddr?(IPAddr.new("127.0.0.1")))
+    assert_equal(false, @klass.ipaddr?("localhost"))
+    assert_equal(false, @klass.ipaddr?("google.co.jp"))
+  end
+
   #
   # インスタンスメソッド
   #
