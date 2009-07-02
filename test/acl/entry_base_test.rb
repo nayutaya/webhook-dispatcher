@@ -7,13 +7,10 @@ class EntryBaseTest < Test::Unit::TestCase
     @klass = WebHookDispatcher::Acl::EntryBase
   end
 
-  def test_initialize__default
+  def test_initialize__all
     assert_equal(
       [nil, nil, nil],
       @klass.new.to_a)
-  end
-
-  def test_initialize__all
     assert_equal(
       [nil, nil, nil],
       @klass.new(nil).to_a)
@@ -46,8 +43,8 @@ class EntryBaseTest < Test::Unit::TestCase
       [nil, nil, nil],
       @klass.new(:name => :all).to_a)
     assert_equal(
-      [nil, "www.google.co.jp", nil],
-      @klass.new(:name => "WWW.GOOGLE.CO.JP").to_a)
+      [nil, "google.co.jp", nil],
+      @klass.new(:name => "GOOGLE.CO.JP").to_a)
     assert_equal(
       [nil, /google\.co\.jp/, nil],
       @klass.new(:name => /google\.co\.jp/).to_a)
@@ -76,21 +73,18 @@ class EntryBaseTest < Test::Unit::TestCase
     }
   end
 
-  def test_initialize__addr_and_name
-    assert_raise(ArgumentError) {
-      @klass.new(:addr => "127.0.0.1", :name => "localhost")
-    }
-  end
-
-  def test_initialize__invalid_key
-    assert_raise(ArgumentError) {
-      @klass.new(:invalid => true)
-    }
+  def test_initialize__addr_and_name_and_port
+    assert_equal(
+      [IPAddr.new("127.0.0.1"), "localhost", [80]],
+      @klass.new(:addr => "127.0.0.1", :name => "localhost", :port => 80).to_a)
   end
 
   def test_initialize__invalid_parameter
     assert_raise(ArgumentError) {
       @klass.new(:invalid)
+    }
+    assert_raise(ArgumentError) {
+      @klass.new(:invalid => true)
     }
   end
 
@@ -151,10 +145,18 @@ class EntryBaseTest < Test::Unit::TestCase
     assert_equal(false, entry.match?(nil, nil, 81))
   end
 
+  def test_match__addr_and_name
+    entry = @klass.new(:addr => "127.0.0.1", :name => "localhost")
+    assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
+    assert_equal(true,  entry.match?("127.0.0.1", "localhost", nil))
+    assert_equal(false, entry.match?("127.0.0.1", "google.co.jp", 80))
+    assert_equal(false, entry.match?("192.168.0.1", "localhost", 80))
+  end
+
   def test_match__addr_and_port
     entry = @klass.new(:addr => "127.0.0.1", :port => 80)
     assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
-    assert_equal(true,  entry.match?("127.0.0.1", "google.co.jp", 80))
+    assert_equal(true,  entry.match?("127.0.0.1", nil, 80))
     assert_equal(false, entry.match?("127.0.0.1", "localhost", 8080))
     assert_equal(false, entry.match?("192.168.0.1", "localhost", 80))
   end
@@ -162,9 +164,17 @@ class EntryBaseTest < Test::Unit::TestCase
   def test_match_name_and_port
     entry = @klass.new(:name => "localhost", :port => 80)
     assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
+    assert_equal(true,  entry.match?(nil, "localhost", 80))
     assert_equal(false, entry.match?("127.0.0.1", "google.co.jp", 80))
     assert_equal(false, entry.match?("127.0.0.1", "localhost", 8080))
-    assert_equal(true,  entry.match?("192.168.0.1", "localhost", 80))
+  end
+
+  def test_match_addr_and_name_and_port
+    entry = @klass.new(:addr => "127.0.0.1", :name => "localhost", :port => 80)
+    assert_equal(true,  entry.match?("127.0.0.1", "localhost", 80))
+    assert_equal(false, entry.match?("192.168.0.1", "localhost", 80))
+    assert_equal(false, entry.match?("127.0.0.1", "google.co.jp", 80))
+    assert_equal(false, entry.match?("127.0.0.1", "localhost", 8080))
   end
 
   def test_value
@@ -179,18 +189,18 @@ class EntryBaseTest < Test::Unit::TestCase
       @klass.new.to_a)
   end
 
-  def test_match_address?
+  def test_match_addr?
     entry = @klass.new
-    assert_equal(true, entry.instance_eval { match_address?(nil) })
-    assert_equal(true, entry.instance_eval { match_address?(IPAddr.new("10.0.0.0")) })
-    assert_equal(true, entry.instance_eval { match_address?(IPAddr.new("172.16.0.0")) })
-    assert_equal(true, entry.instance_eval { match_address?(IPAddr.new("192.168.0.0")) })
+    assert_equal(true, entry.instance_eval { match_addr?(nil) })
+    assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("10.0.0.0")) })
+    assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("172.16.0.0")) })
+    assert_equal(true, entry.instance_eval { match_addr?(IPAddr.new("192.168.0.0")) })
 
     entry = @klass.new(:addr => "10.0.0.0/8")
-    assert_equal(false, entry.instance_eval { match_address?(nil) })
-    assert_equal(true,  entry.instance_eval { match_address?(IPAddr.new("10.0.0.0")) })
-    assert_equal(false, entry.instance_eval { match_address?(IPAddr.new("172.16.0.0")) })
-    assert_equal(false, entry.instance_eval { match_address?(IPAddr.new("192.168.0.0")) })
+    assert_equal(false, entry.instance_eval { match_addr?(nil) })
+    assert_equal(true,  entry.instance_eval { match_addr?(IPAddr.new("10.0.0.0")) })
+    assert_equal(false, entry.instance_eval { match_addr?(IPAddr.new("172.16.0.0")) })
+    assert_equal(false, entry.instance_eval { match_addr?(IPAddr.new("192.168.0.0")) })
   end
 
   def test_match_name?

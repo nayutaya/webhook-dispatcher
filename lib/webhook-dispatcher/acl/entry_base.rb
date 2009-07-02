@@ -21,7 +21,6 @@ class WebHookDispatcher::Acl::EntryBase
       @name = normalize_name(options.delete(:name))
       @port = normalize_port(options.delete(:port))
       raise(ArgumentError) unless options.empty?
-      raise(ArgumentError) if !@addr.nil? && !@name.nil?
     else raise(ArgumentError)
     end
   end
@@ -34,7 +33,7 @@ class WebHookDispatcher::Acl::EntryBase
   end
 
   def match?(addr, name, port)
-    return match_address?(addr) && match_name?(name) && match_port?(port)
+    return match_addr?(addr) && match_name?(name) && match_port?(port)
   end
 
   def value
@@ -78,7 +77,7 @@ class WebHookDispatcher::Acl::EntryBase
     end
   end
 
-  def match_address?(addr)
+  def match_addr?(addr)
     return true if self.addr.nil?
     return (!addr.nil? && self.addr.include?(addr))
   end
