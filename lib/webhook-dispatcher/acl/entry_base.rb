@@ -10,13 +10,14 @@ end
 
 class WebHookDispatcher::Acl::EntryBase
   AnyAddress = IPAddr.new("0.0.0.0/0")
+  AnyName    = //
   AnyPort    = 0..65535
 
   def initialize(options = :all)
     case options
     when :all, {}
       @addr = AnyAddress
-      @name = nil
+      @name = AnyName
       @port = AnyPort
     when Hash
       options = options.dup
@@ -27,9 +28,9 @@ class WebHookDispatcher::Acl::EntryBase
 
       @addr, @name =
         case [addr, name].map(&:nil?)
-        when [false, true ] then [normalize_addr(addr), nil]
-        when [true , false] then [nil, normalize_name(name)]
-        when [true , true ] then [AnyAddress, nil]
+        when [false, true ] then [normalize_address(addr), AnyName]
+        when [true , false] then [AnyAddress, normalize_name(name)]
+        when [true , true ] then [AnyAddress, AnyName]
         else raise(ArgumentError)
         end
       @port = normalize_port(port)
@@ -48,7 +49,7 @@ class WebHookDispatcher::Acl::EntryBase
 
   private
 
-  def normalize_addr(addr)
+  def normalize_address(addr)
     case addr
     when :all   then return AnyAddress
     when String then return IPAddr.new(addr)
