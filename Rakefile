@@ -9,6 +9,7 @@ Rake::TestTask.new do |test|
   test.verbose    =  true
 end
 
+desc "Generate gemspec file from template"
 task :gemspec do
   require "erb"
   require "lib/webhook-dispatcher/version"
