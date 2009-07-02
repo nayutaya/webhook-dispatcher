@@ -26,7 +26,7 @@ class AclTest < Test::Unit::TestCase
   def test_self_with__allow_and_deny
     acl = @klass.with {
       allow :all
-      deny :all
+      deny  :all
     }
     assert_equal(2, acl.size)
   end
@@ -49,6 +49,37 @@ class AclTest < Test::Unit::TestCase
       @klass.deny_all)
   end
 
+  def test_self_ipaddr?
+    assert_equal(true,  @klass.ipaddr?("127.0.0.1"))
+    assert_equal(true,  @klass.ipaddr?(IPAddr.new("127.0.0.1")))
+    assert_equal(false, @klass.ipaddr?("localhost"))
+    assert_equal(false, @klass.ipaddr?("google.co.jp"))
+  end
+
+  def test_self_create_matching_targets__addr
+    assert_equal(
+      [[IPAddr.new("127.0.0.1"), nil, 80]],
+      @klass.create_matching_targets("127.0.0.1", 80))
+    assert_equal(
+      [[IPAddr.new("192.168.0.1"), nil, 8080]],
+      @klass.create_matching_targets("192.168.0.1", 8080))
+  end
+
+  def test_self_create_matching_targets__name
+    musha = Kagemusha.new(TCPSocket)
+    musha.defs(:gethostbyname) {
+      ["google.co.jp", [], 2, "72.14.203.104", "74.125.91.104", "74.125.95.104"]
+    }
+    expected = [
+      [IPAddr.new("72.14.203.104"), "google.co.jp", 80],
+      [IPAddr.new("74.125.91.104"), "google.co.jp", 80],
+      [IPAddr.new("74.125.95.104"), "google.co.jp", 80],
+    ]
+    assert_equal(
+      expected,
+      musha.swap { @klass.create_matching_targets("google.co.jp", 80) })
+  end
+
   #
   # インスタンスメソッド
   #
@@ -60,15 +91,15 @@ class AclTest < Test::Unit::TestCase
 
   def test_equal__same_size_but_not_equal
     a, b = @klass.new, @klass.new
-    a.add_allow("127.0.0.0/8")
-    b.add_deny("127.0.0.0/8")
+    a.add_allow(:addr => "127.0.0.0/8")
+    b.add_deny(:addr => "127.0.0.0/8")
     assert_equal(false, (a == b))
   end
 
   def test_equal__same
     a, b = @klass.new, @klass.new
-    a.add_allow("127.0.0.0/8")
-    b.add_allow("127.0.0.0/8")
+    a.add_allow(:addr => "127.0.0.0/8")
+    b.add_allow(:addr => "127.0.0.0/8")
     assert_equal(true, (a == b))
   end
 
@@ -78,17 +109,17 @@ class AclTest < Test::Unit::TestCase
 
   def test_add_allow
     assert_equal(0, @acl.size)
-    @acl.add_allow("0.0.0.0/0")
+    @acl.add_allow(:addr => "0.0.0.0/0")
     assert_equal(1, @acl.size)
-    @acl.add_allow("0.0.0.0/0")
+    @acl.add_allow(:addr => "0.0.0.0/0")
     assert_equal(2, @acl.size)
   end
 
   def test_add_deny
     assert_equal(0, @acl.size)
-    @acl.add_deny("0.0.0.0/0")
+    @acl.add_deny(:addr => "0.0.0.0/0")
     assert_equal(1, @acl.size)
-    @acl.add_deny("0.0.0.0/0")
+    @acl.add_deny(:addr => "0.0.0.0/0")
     assert_equal(2, @acl.size)
   end
 
@@ -115,24 +146,24 @@ class AclTest < Test::Unit::TestCase
 
   def test_allow?
     assert_equal(true, @acl.allow?("127.0.0.1"))
-    @acl.add_deny("127.0.0.0/8")
-    assert_equal(false, @acl.allow?("127.0.0.1"))
-    @acl.add_allow("127.0.0.0/8")
-    assert_equal(true, @acl.allow?("127.0.0.1"))
+    @acl.add_deny(:addr => "127.0.0.0/8")
+    assert_equal(false, @acl.allow?("127.0.0.1", 80))
+    @acl.add_allow(:port => 80)
+    assert_equal(true, @acl.allow?("127.0.0.1", 80))
   end
 
   def test_deny?
     assert_equal(false, @acl.deny?("127.0.0.1"))
-    @acl.add_deny("127.0.0.0/8")
-    assert_equal(true, @acl.deny?("127.0.0.1"))
-    @acl.add_allow("127.0.0.0/8")
-    assert_equal(false, @acl.deny?("127.0.0.1"))
+    @acl.add_deny(:addr => "127.0.0.0/8")
+    assert_equal(true, @acl.deny?("127.0.0.1", 80))
+    @acl.add_allow(:port => 80)
+    assert_equal(false, @acl.deny?("127.0.0.1", 80))
   end
 
   def test_complex1
     @acl.with {
-      deny :all
-      allow "127.0.0.0/8"
+      deny  :all
+      allow :addr => "127.0.0.0/8"
     }
 
     assert_equal(false, @acl.allow?("126.255.255.255"))
@@ -143,10 +174,10 @@ class AclTest < Test::Unit::TestCase
 
   def test_complex2
     @acl.with {
-      deny :all
-      allow "192.168.1.0/24"
-      allow "192.168.3.0/24"
-      deny "192.168.1.127"
+      deny  :all
+      allow :addr => "192.168.1.0/24"
+      allow :addr => "192.168.3.0/24"
+      deny  :addr => "192.168.1.127"
     }
 
     assert_equal(false, @acl.allow?("192.168.0.0"))
@@ -158,29 +189,54 @@ class AclTest < Test::Unit::TestCase
     assert_equal(true,  @acl.allow?("192.168.3.255"))
   end
 
-  #
-  # RecordBaseクラス
-  #
+  def test_complex3
+    @acl.with {
+      deny  :all
+      allow :port => 80
+      deny  :name => "localhost"
+    }
 
-  def test_record_base_initialize
-    assert_equal(
-      IPAddr.new("127.0.0.0/8"),
-      @klass::RecordBase.new(IPAddr.new("127.0.0.0/8")).ipaddr)
-    assert_equal(
-      IPAddr.new("127.0.0.0/8"),
-      @klass::RecordBase.new("127.0.0.0/8").ipaddr)
-    assert_equal(
-      IPAddr.new("0.0.0.0/0"),
-      @klass::RecordBase.new(:all).ipaddr)
+    assert_equal(true,  @acl.allow?("127.0.0.1", 80))
+    assert_equal(false, @acl.allow?("localhost", 80))
+    assert_equal(true,  @acl.allow?("google.co.jp", 80))
+  end
 
-    assert_raise(ArgumentError) {
-      @klass::RecordBase.new(:invalid)
+  def test_complex4
+    name, aliases, type, *addresses = TCPSocket.gethostbyname("google.co.jp")
+
+    addresses.each { |addr|
+      acl = @klass.new
+      acl.add_allow(:all)
+      acl.add_deny(:addr => addr)
+      assert_equal(true,  acl.allow?("localhost"))
+      assert_equal(true,  acl.allow?("yahoo.co.jp"))
+      assert_equal(false, acl.allow?("google.co.jp"))
+      assert_equal(false, acl.allow?(addr))
     }
   end
 
-  def test_record_base_equal
-    assert_equal(true,  (@klass::RecordBase.new(:all) == @klass::RecordBase.new(:all)))
-    assert_equal(false, (@klass::RecordBase.new(:all) == @klass::RecordBase.new("127.0.0.0/8")))
-    assert_equal(false, (@klass::RecordBase.new(:all) == nil))
+  def test_complex5
+    name, aliases, type, *addresses = TCPSocket.gethostbyname("google.co.jp")
+
+    addresses.each { |addr|
+      acl = @klass.new
+      acl.add_deny(:all)
+      acl.add_allow(:addr => addr)
+      assert_equal(false, acl.allow?("localhost"))
+      assert_equal(false, acl.allow?("yahoo.co.jp"))
+      assert_equal(false, acl.allow?("google.co.jp"))
+      assert_equal(true,  acl.allow?(addr))
+    }
+  end
+
+  def test_complex6
+    name, aliases, type, *addresses = TCPSocket.gethostbyname("google.co.jp")
+
+    @acl.add_deny(:all)
+    addresses.each { |addr| @acl.add_allow(:addr => addr) }
+
+    assert_equal(false, @acl.allow?("localhost"))
+    assert_equal(false, @acl.allow?("yahoo.co.jp"))
+    assert_equal(true,  @acl.allow?("google.co.jp"))
   end
 end

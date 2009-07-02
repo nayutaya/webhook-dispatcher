@@ -9,7 +9,7 @@ class CoreTest < Test::Unit::TestCase
 
     @real_access = true
     @example_jp  = URI.parse("http://example.jp/")
-    @get_request = @klass::Request::Get.new(@example_jp)
+    @get_request = @klass::Request::Get.new(URI.parse("http://localhost/"))
     @http_musha  = Kagemusha.new(Net::HTTP)
   end
 
@@ -182,7 +182,21 @@ class CoreTest < Test::Unit::TestCase
     assert_equal(nil, response.exception)
   end
 
-  # TODO: 許可されていないホストに対するHTTPリクエストのテスト
+  def test_request__denied
+    request = @get_request
+    @dispatcher.acl_with {
+      allow :all
+      deny :name => request.uri.host, :port => request.uri.port
+    }
+
+    response = @http_musha.swap { @dispatcher.request(@get_request) }
+    assert_equal(false,   response.success?)
+    assert_equal(:denied, response.status)
+    assert_equal(nil,     response.http_code)
+
+    assert_equal("denied.", response.message)
+    assert_equal(nil, response.exception)
+  end
 
   def test_request__timeout
     @http_musha.def(:start) { raise(TimeoutError) }

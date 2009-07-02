@@ -9,34 +9,32 @@ class WebHookDispatcher
 end
 
 class WebHookDispatcher::Acl::EntryBase
-  AnyAddress   = IPAddr.new("0.0.0.0/0")
-  TcpPortRange = 0..65535
-
-  def initialize(options = :all)
+  def initialize(options = nil)
     case options
-    when :all, {}
-      @addr = AnyAddress
+    when nil, :all
+      @addr = nil
       @name = nil
-      @port = TcpPortRange
+      @port = nil
     when Hash
       options = options.dup
-      addr = options.delete(:addr)
-      name = options.delete(:name)
-      port = options.delete(:port) || :all
+      @addr = normalize_addr(options.delete(:addr))
+      @name = normalize_name(options.delete(:name))
+      @port = normalize_port(options.delete(:port))
       raise(ArgumentError) unless options.empty?
-
-      @addr, @name =
-        case [addr, name].map(&:nil?)
-        when [false, true ] then [normalize_addr(addr), nil]
-        when [true , false] then [nil, normalize_name(name)]
-        when [true , true ] then [AnyAddress, nil]
-        else raise(ArgumentError)
-        end
-      @port = normalize_port(port)
+    else raise(ArgumentError)
     end
   end
 
   attr_reader :addr, :name, :port
+
+  def ==(other)
+    return false unless other.instance_of?(self.class)
+    return (self.to_a == other.to_a)
+  end
+
+  def match?(addr, name, port)
+    return match_addr?(addr) && match_name?(name) && match_port?(port)
+  end
 
   def value
     raise(NotImplementedError)
@@ -50,7 +48,8 @@ class WebHookDispatcher::Acl::EntryBase
 
   def normalize_addr(addr)
     case addr
-    when :all   then return AnyAddress
+    when nil    then return nil
+    when :all   then return nil
     when String then return IPAddr.new(addr)
     when IPAddr then return addr
     else raise(ArgumentError)
@@ -59,32 +58,37 @@ class WebHookDispatcher::Acl::EntryBase
 
   def normalize_name(name)
     case name
-    when String then name.downcase
-    when Regexp then name
+    when nil    then return nil
+    when :all   then return nil
+    when String then return name.downcase
+    when Regexp then return name
     else raise(ArgumentError)
     end
   end
 
   def normalize_port(port)
     case port
-    when :all    then TcpPortRange
-    when Integer then [port]
-    when Array   then port.sort
-    when Range   then port
+    when nil     then return nil
+    when :all    then return nil
+    when Integer then return [port]
+    when Array   then return port.sort
+    when Range   then return port
     else raise(ArgumentError)
     end
   end
 
   def match_addr?(addr)
-    return self.addr.include?(addr)
+    return true if self.addr.nil?
+    return (!addr.nil? && self.addr.include?(addr))
   end
 
   def match_name?(name)
     return true if self.name.nil?
-    return (self.name === name.downcase)
+    return (!name.nil? && (self.name === name.downcase))
   end
 
   def match_port?(port)
-    return self.port.include?(port)
+    return true if self.port.nil?
+    return (!port.nil? && self.port.include?(port))
   end
 end
