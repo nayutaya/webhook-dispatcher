@@ -60,6 +60,7 @@ class WebHookDispatcher::Acl::EntryBase
 
   def normalize_name(name)
     case name
+    when :all   then AnyName
     when String then name.downcase
     when Regexp then name
     else raise(ArgumentError)

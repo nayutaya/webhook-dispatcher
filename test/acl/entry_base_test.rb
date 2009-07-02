@@ -41,6 +41,9 @@ class EntryBaseTest < Test::Unit::TestCase
 
   def test_initialize__name
     assert_equal(
+      [IPAddr.new("0.0.0.0/0"), //, (0..65535)],
+      @klass.new(:name => :all).to_a)
+    assert_equal(
       [IPAddr.new("0.0.0.0/0"), "www.google.co.jp", (0..65535)],
       @klass.new(:name => "WWW.GOOGLE.CO.JP").to_a)
     assert_equal(
