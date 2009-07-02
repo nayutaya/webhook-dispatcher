@@ -58,8 +58,8 @@ class WebHookDispatcher::Acl
   end
 
   def allow?(ipaddr)
-    return @entries.inject(true) { |result, record|
-      result = record.value if record.match?(ipaddr, nil, nil)
+    return @entries.inject(true) { |result, entry|
+      result = entry.value if entry.match?(ipaddr, nil, nil)
       result
     }
   end
