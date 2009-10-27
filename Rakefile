@@ -14,8 +14,9 @@ task :gemspec do
   require "erb"
   require "lib/webhook-dispatcher/version"
 
-  src = File.open("webhook-dispatcher.gemspec.erb", "rb") { |file| file.read }
-  erb = ERB.new(src, nil, "-")
+  name = "nayutaya-webhook-dispatcher"
+  src  = File.open("#{name}.gemspec.erb", "rb") { |file| file.read }
+  erb  = ERB.new(src, nil, "-")
 
   version = WebHookDispatcher::VERSION
   date    = Time.now.strftime("%Y-%m-%d")
@@ -29,7 +30,7 @@ task :gemspec do
     select { |path| File.file?(path) }.
     sort
 
-  File.open("webhook-dispatcher.gemspec", "wb") { |file|
+  File.open("#{name}.gemspec", "wb") { |file|
     file.write(erb.result(binding))
   }
 end
